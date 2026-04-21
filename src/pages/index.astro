@@ -35,7 +35,6 @@ const suggestionIndex = [
   ...allClients.map((v) => ({ value: v, type: 'client' })),
   ...allTitles.map((v) => ({ value: v, type: 'work' })),
 ];
-import { ViewTransitions } from 'astro:transitions';
 ---
 
 <!doctype html>
@@ -48,7 +47,6 @@ import { ViewTransitions } from 'astro:transitions';
       name="description"
       content="Music and sound for advertising — portfolio of Yishay Raziel."
     />
-    <ViewTransitions />
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   </head>
   <body>

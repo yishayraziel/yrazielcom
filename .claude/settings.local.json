@@ -30,7 +30,12 @@
       "Bash(netlify --version)",
       "Bash(netlify sites:create --name yraziel --manual)",
       "Bash(netlify deploy *)",
-      "Bash(netlify api *)"
+      "Bash(netlify api *)",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\('/Users/yishayraziel/Library/Preferences/netlify/config.json'\\)\\); users=d.get\\('users',{}\\); tok=[u.get\\('auth',{}\\).get\\('token'\\) for u in users.values\\(\\)][0]; print\\(tok\\)\")",
+      "Bash(curl -s -X POST https://api.netlify.com/api/v1/sites/fa60363c-369a-4c7f-bea0-08fb924ec722/identity -H 'Authorization: Bearer nfc_5aHTG4udrpKqVcvjtBaM8fMMeMYXM9nzdebc' -H 'Content-Type: application/json' -d '{}')",
+      "Bash(curl -s -X POST https://api.netlify.com/api/v1/fa60363c-369a-4c7f-bea0-08fb924ec722/services/git/instances -H 'Authorization: Bearer nfc_5aHTG4udrpKqVcvjtBaM8fMMeMYXM9nzdebc' -H 'Content-Type: application/json' -d '{}')",
+      "Bash(curl -s -X POST https://api.netlify.com/api/v1/sites/fa60363c-369a-4c7f-bea0-08fb924ec722/services/git/instances -H 'Authorization: Bearer nfc_5aHTG4udrpKqVcvjtBaM8fMMeMYXM9nzdebc' -H 'Content-Type: application/json' -d '{}')",
+      "Bash(curl -s -X PUT https://api.netlify.com/api/v1/sites/fa60363c-369a-4c7f-bea0-08fb924ec722 -H 'Authorization: Bearer nfc_5aHTG4udrpKqVcvjtBaM8fMMeMYXM9nzdebc' -H 'Content-Type: application/json' -d '{\"repo\":{\"provider\":\"github\",\"repo\":\"yishayraziel/yrazielcom\",\"branch\":\"main\",\"cmd\":\"npm run build\",\"dir\":\"dist\"}}')"
     ]
   }
 }
