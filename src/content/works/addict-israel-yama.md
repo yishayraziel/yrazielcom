@@ -3,9 +3,7 @@ title: Yama
 client: Addict Israel
 date: 2019-09-03
 youtube: https://www.youtube.com/watch?v=K3d1GJZ0P6w
-tags: ["Radio"]
-  - Commercial
-  - Radio
+tags: ["Radio", "Commercial"]
 ---
 
 AGENCY: ADDICT ISRAEL
