@@ -4,7 +4,7 @@ client: "Mccann Tlv
 Prod"
 date: 2019-09-03
 youtube: "https://www.youtube.com/watch?v=XoHSqZz8m50"
-tags: ["Pharma"]
+tags: ["TV", "Pharma"]
 ---
 
 ORIGINAL MUSIC: YISHAY RAZIEL

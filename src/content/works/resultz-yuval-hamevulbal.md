@@ -3,7 +3,7 @@ title: "Yuval Hamevulbal"
 client: "Resultz"
 date: 2019-09-03
 youtube: "https://www.youtube.com/watch?v=9_4DOt3YHIs"
-tags: ["Kids"]
+tags: ["TV", "Kids"]
 ---
 
 AGENCY: 4FOUR

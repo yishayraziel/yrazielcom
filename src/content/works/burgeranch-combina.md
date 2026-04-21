@@ -3,7 +3,7 @@ title: "Combina"
 client: "Burgeranch"
 date: 2019-09-03
 youtube: "https://www.youtube.com/watch?v=7_XFergHDlk"
-tags: ["Food"]
+tags: ["TV", "Food"]
 ---
 
 Agency: Zeder : Yariv

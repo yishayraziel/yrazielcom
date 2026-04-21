@@ -3,7 +3,7 @@ title: "Party"
 client: "Yes"
 date: 2019-09-03
 youtube: "https://www.youtube.com/watch?v=ig8tlczdcGw"
-tags: ["Telecom"]
+tags: ["TV", "Telecom"]
 ---
 
 Production: Promotheus

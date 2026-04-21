@@ -3,7 +3,7 @@ title: "7Seven By Opticana"
 client: "Mccann Tlv"
 date: 2019-09-03
 youtube: "https://www.youtube.com/watch?v=PmVzKYqqgmg"
-tags: ["Eyewear"]
+tags: ["TV", "Eyewear"]
 ---
 
 AGENCY: MCCANN TLV

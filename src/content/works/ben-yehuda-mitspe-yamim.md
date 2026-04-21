@@ -3,7 +3,7 @@ title: "Mitspe Yamim"
 client: "Ben Yehuda"
 date: 2019-09-03
 youtube: "https://www.youtube.com/watch?v=TgP9NdlaDxY"
-tags: ["Tourism"]
+tags: ["TV", "Tourism"]
 ---
 
 AGENCY: BEN YEHUDA

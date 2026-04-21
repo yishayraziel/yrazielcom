@@ -3,7 +3,7 @@ title: "Oshiland"
 client: "Shavit & That'S It"
 date: 2019-09-03
 youtube: "https://www.youtube.com/watch?v=JWHRcUF2itY"
-tags: ["Commercial"]
+tags: ["TV", "Commercial"]
 ---
 
 AGENCY: SHAVIT & THAT'S IT

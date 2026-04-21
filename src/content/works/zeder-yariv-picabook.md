@@ -3,7 +3,7 @@ title: "Picabook"
 client: "Zeder : Yariv"
 date: 2019-09-03
 youtube: "https://www.youtube.com/watch?v=qudtqJk_TdY"
-tags: ["Kids"]
+tags: ["TV", "Kids"]
 ---
 
 AGENCY: ZEDER : YARIV

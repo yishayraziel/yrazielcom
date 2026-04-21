@@ -3,7 +3,7 @@ title: "Opticana -Day & Night"
 client: "Gitam Bbdo"
 date: 2019-09-03
 youtube: "https://www.youtube.com/watch?v=ev7xFEtd3Aw"
-tags: ["Eyewear"]
+tags: ["TV", "Eyewear"]
 ---
 
 AGENCY: GITAM BBDO

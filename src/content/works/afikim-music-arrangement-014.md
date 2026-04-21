@@ -4,7 +4,7 @@ client: "Afikim
 Music Arrangement &"
 date: 2019-09-03
 youtube: "https://www.youtube.com/watch?v=nHvZBrCMPI0"
-tags: ["Telecom"]
+tags: ["Radio", "Telecom"]
 ---
 
 AGENCY: AFIKIM

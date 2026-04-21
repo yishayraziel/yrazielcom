@@ -4,7 +4,7 @@ client: "Boroda Kaplan
 Arrangement &"
 date: 2019-09-03
 youtube: "https://www.youtube.com/watch?v=GyUJMuQmtEU"
-tags: ["Commercial"]
+tags: ["Radio", "Commercial"]
 ---
 
 AGENCY: BORODA KAPLAN
