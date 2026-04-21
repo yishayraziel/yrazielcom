@@ -947,16 +947,31 @@ const suggestionIndex = [
       })();
     </script>
     <script is:inline>
-      // Netlify Identity redirect after login/signup → /admin
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on('init', (user) => {
-          if (!user) {
-            window.netlifyIdentity.on('login', () => {
-              document.location.href = '/admin/';
-            });
+      // Netlify Identity: auto-open modal on invite / recovery / confirmation tokens,
+      // and redirect to /admin after login.
+      (function () {
+        function wire() {
+          if (!window.netlifyIdentity) return;
+          var hash = window.location.hash || '';
+          if (
+            hash.indexOf('invite_token=') !== -1 ||
+            hash.indexOf('recovery_token=') !== -1 ||
+            hash.indexOf('confirmation_token=') !== -1
+          ) {
+            // Force the widget to process the token
+            window.netlifyIdentity.open();
           }
-        });
-      }
+          window.netlifyIdentity.on('init', function (user) {
+            if (!user) {
+              window.netlifyIdentity.on('login', function () {
+                document.location.href = '/admin/';
+              });
+            }
+          });
+        }
+        if (window.netlifyIdentity) wire();
+        else window.addEventListener('load', wire);
+      })();
     </script>
   </body>
 </html>

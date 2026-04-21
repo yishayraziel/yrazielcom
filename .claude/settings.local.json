@@ -35,7 +35,17 @@
       "Bash(curl -s -X POST https://api.netlify.com/api/v1/sites/fa60363c-369a-4c7f-bea0-08fb924ec722/identity -H 'Authorization: Bearer nfc_5aHTG4udrpKqVcvjtBaM8fMMeMYXM9nzdebc' -H 'Content-Type: application/json' -d '{}')",
       "Bash(curl -s -X POST https://api.netlify.com/api/v1/fa60363c-369a-4c7f-bea0-08fb924ec722/services/git/instances -H 'Authorization: Bearer nfc_5aHTG4udrpKqVcvjtBaM8fMMeMYXM9nzdebc' -H 'Content-Type: application/json' -d '{}')",
       "Bash(curl -s -X POST https://api.netlify.com/api/v1/sites/fa60363c-369a-4c7f-bea0-08fb924ec722/services/git/instances -H 'Authorization: Bearer nfc_5aHTG4udrpKqVcvjtBaM8fMMeMYXM9nzdebc' -H 'Content-Type: application/json' -d '{}')",
-      "Bash(curl -s -X PUT https://api.netlify.com/api/v1/sites/fa60363c-369a-4c7f-bea0-08fb924ec722 -H 'Authorization: Bearer nfc_5aHTG4udrpKqVcvjtBaM8fMMeMYXM9nzdebc' -H 'Content-Type: application/json' -d '{\"repo\":{\"provider\":\"github\",\"repo\":\"yishayraziel/yrazielcom\",\"branch\":\"main\",\"cmd\":\"npm run build\",\"dir\":\"dist\"}}')"
+      "Bash(curl -s -X PUT https://api.netlify.com/api/v1/sites/fa60363c-369a-4c7f-bea0-08fb924ec722 -H 'Authorization: Bearer nfc_5aHTG4udrpKqVcvjtBaM8fMMeMYXM9nzdebc' -H 'Content-Type: application/json' -d '{\"repo\":{\"provider\":\"github\",\"repo\":\"yishayraziel/yrazielcom\",\"branch\":\"main\",\"cmd\":\"npm run build\",\"dir\":\"dist\"}}')",
+      "Bash(curl -s -X POST https://api.netlify.com/api/v1/dns_zones -H 'Authorization: Bearer nfc_5aHTG4udrpKqVcvjtBaM8fMMeMYXM9nzdebc' -H 'Content-Type: application/json' -d '{\"name\":\"yraziel.com\",\"site_id\":\"fa60363c-369a-4c7f-bea0-08fb924ec722\"}')",
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -s -X PATCH https://api.netlify.com/api/v1/sites/fa60363c-369a-4c7f-bea0-08fb924ec722 -H 'Authorization: Bearer nfc_5aHTG4udrpKqVcvjtBaM8fMMeMYXM9nzdebc' -H 'Content-Type: application/json' -d '{\"custom_domain\":\"yraziel.com\",\"domain_aliases\":[\"www.yraziel.com\"]}')",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('www:', d.get\\('hostname'\\), d.get\\('type'\\), '->', d.get\\('value'\\)\\)\")",
+      "Bash(curl -s https://api.netlify.com/api/v1/sites/fa60363c-369a-4c7f-bea0-08fb924ec722/ssl -H 'Authorization: Bearer nfc_5aHTG4udrpKqVcvjtBaM8fMMeMYXM9nzdebc')",
+      "Bash(curl -s -X POST https://api.netlify.com/api/v1/sites/fa60363c-369a-4c7f-bea0-08fb924ec722/ssl -H 'Authorization: Bearer nfc_5aHTG4udrpKqVcvjtBaM8fMMeMYXM9nzdebc')",
+      "Bash(curl -s -X POST 'https://api.netlify.com/api/v1/sites/fa60363c-369a-4c7f-bea0-08fb924ec722/ssl?certificate=&key=&ca_certificates=' -H 'Authorization: Bearer nfc_5aHTG4udrpKqVcvjtBaM8fMMeMYXM9nzdebc' -H 'Content-Type: application/json')",
+      "Bash(dig +short NS yraziel.com @8.8.8.8)",
+      "Bash(dig +short yraziel.com @8.8.8.8)",
+      "Bash(dig +short yraziel.com @dns1.p09.nsone.net)"
     ]
   }
 }
