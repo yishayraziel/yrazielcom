@@ -581,19 +581,15 @@ import { ViewTransitions } from 'astro:transitions';
 
     <script is:inline data-astro-rerun>
       // Body fade-in — works on first load and after ClientRouter transitions
+      // Fade body in on every page load/show. Just add the class — no remove/RAF dance
+      // (which was leaving body at opacity 0 on repeat back-navigation).
       const fadein = () => {
-        document.body.classList.remove('js-fadein');
-        requestAnimationFrame(() =>
-          requestAnimationFrame(() => document.body.classList.add('js-fadein'))
-        );
-      };
-      document.addEventListener('astro:page-load', fadein);
-      fadein();
-      // Backstop: ensure cards are visible after any View Transition navigation back to /
-      const revealAllCards = () => {
+        document.body.classList.add('js-fadein');
         document.querySelectorAll('#grid .card').forEach((c) => c.classList.add('in-view'));
       };
-      document.addEventListener('astro:page-load', revealAllCards);
+      fadein();
+      document.addEventListener('astro:page-load', fadein);
+      window.addEventListener('pageshow', fadein);
       (() => {
         const grid = document.getElementById('grid');
         const empty = document.getElementById('empty');

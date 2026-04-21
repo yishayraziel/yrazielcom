@@ -23,7 +23,14 @@
       "Bash(curl -sL \"https://2wei.audio/wp-content/themes/2wei/style.css\" -o /tmp/2wei.css)",
       "WebFetch(domain:www.yraziel.com)",
       "Bash(curl -sL \"https://static.wixstatic.com/media/f70e8b_02d2021e619f4cce82ef0b317a76a74b~mv2_d_2774_1849_s_2.jpg/v1/fill/w_1200,h_800,al_c,q_85/f70e8b_02d2021e619f4cce82ef0b317a76a74b~mv2_d_2774_1849_s_2.jpg\" -o yishay-portrait.jpg)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(gh auth *)",
+      "Bash(git config *)",
+      "Bash(gh --version)",
+      "Bash(netlify --version)",
+      "Bash(netlify sites:create --name yraziel --manual)",
+      "Bash(netlify deploy *)",
+      "Bash(netlify api *)"
     ]
   }
 }

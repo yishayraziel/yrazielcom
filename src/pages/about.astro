@@ -204,14 +204,10 @@ const bio = [
     </style>
 
     <script is:inline data-astro-rerun>
-      const fadein = () => {
-        document.body.classList.remove('js-fadein');
-        requestAnimationFrame(() =>
-          requestAnimationFrame(() => document.body.classList.add('js-fadein'))
-        );
-      };
-      document.addEventListener('astro:page-load', fadein);
+      const fadein = () => document.body.classList.add('js-fadein');
       fadein();
+      document.addEventListener('astro:page-load', fadein);
+      window.addEventListener('pageshow', fadein);
     </script>
   </body>
 </html>
