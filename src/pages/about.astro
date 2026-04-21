@@ -1,0 +1,217 @@
+---
+// About page — bio + portrait
+import { ViewTransitions } from 'astro:transitions';
+const bio = [
+  "Since starting out as a 14-year-old DJ at the pirate radio stations of the 90's, Yishay Raziel dreamed of creating music for advertising.",
+  "His dream came true at age 16, when he established his first home studio in Haifa, which later moved to Eilat and Givatayim.",
+  "Over the years, Yishay composed, produced, sang, and voiced thousands of jingles on radio and television for leading brands, advertising agencies, and radio stations.",
+  "In 2008, Yishay reopened the studio as a commercial studio in Tel Aviv, together with the voice talent Meir Keidar.",
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>About — Yishay Raziel</title>
+    <meta
+      name="description"
+      content="About Yishay Raziel — composer, producer and voice talent for advertising since the 90's."
+    />
+    <ViewTransitions />
+  </head>
+  <body>
+    <div class="page">
+      <header class="site-header">
+        <a href="/" class="logo-link" aria-label="Home">
+          <img src="/logo.png" alt="Yishay Raziel — Music & Sound" class="logo" />
+        </a>
+        <nav class="top-nav" aria-label="Primary">
+          <a href="/" class="nav-link" data-astro-prefetch>Works</a>
+          <a href="/about" class="nav-link is-active" data-astro-prefetch>About</a>
+          <a href="/contact" class="nav-link" data-astro-prefetch>Contact</a>
+        </nav>
+      </header>
+
+      <main class="about">
+        <div class="about-grid">
+          <figure class="portrait">
+            <img src="/yishay-portrait.jpg" alt="Yishay Raziel in the studio" />
+          </figure>
+          <div class="bio">
+            <h1>Yishay Raziel</h1>
+            <p class="tagline">Music &amp; Sound for advertising — Tel Aviv</p>
+            {bio.map((para) => <p>{para}</p>)}
+          </div>
+        </div>
+      </main>
+
+      <footer>
+        <p>© {new Date().getFullYear()} Yishay Raziel</p>
+      </footer>
+    </div>
+
+    <style>
+      :root {
+        --bg: #ffffff;
+        --fg: #000000;
+        --muted: #7a7a7a;
+        --border: #e5e5e5;
+        --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+        font-weight: 300;
+        letter-spacing: 0.01em;
+        opacity: 0;
+        transition: opacity 0.35s var(--ease);
+      }
+      body.js-fadein { opacity: 1; }
+      .page {
+        transform: scale(0.98);
+        transition: transform 0.4s var(--ease);
+      }
+      body.js-fadein .page { transform: scale(1); }
+
+      /* Header — same as home */
+      .site-header {
+        padding: 3rem 2rem 1.5rem;
+        text-align: center;
+        position: relative;
+      }
+      .logo-link { display: inline-block; text-decoration: none; }
+      .logo {
+        width: clamp(180px, 22vw, 260px);
+        height: auto;
+        display: inline-block;
+        transition: transform 0.6s var(--ease);
+      }
+      .logo-link:hover .logo { transform: scale(1.02); }
+      .top-nav {
+        display: flex;
+        gap: 1.8rem;
+        justify-content: center;
+        margin-top: 1.2rem;
+      }
+      .nav-link {
+        font-size: 0.8rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: var(--muted);
+        padding: 0.25rem 0.1rem;
+        border-bottom: 1px solid transparent;
+        transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
+      }
+      .nav-link:hover { color: var(--fg); }
+      .nav-link.is-active { color: var(--fg); border-bottom-color: var(--fg); }
+
+      /* About layout */
+      .about {
+        max-width: 1100px;
+        margin: 3rem auto 6rem;
+        padding: 0 2rem;
+      }
+      .about-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+        gap: clamp(2rem, 5vw, 4rem);
+        align-items: start;
+      }
+      @media (max-width: 780px) {
+        .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      }
+      .portrait {
+        margin: 0;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .portrait img {
+        width: 100%;
+        height: auto;
+        display: block;
+        filter: saturate(0.92);
+        transition: transform 1.2s var(--ease), filter 0.5s var(--ease);
+      }
+      .portrait:hover img { transform: scale(1.03); filter: saturate(1.05); }
+
+      .bio h1 {
+        margin: 0 0 0.3rem;
+        font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+        font-weight: 300;
+        letter-spacing: 0.02em;
+      }
+      .bio .tagline {
+        margin: 0 0 2rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .bio p {
+        font-size: 1rem;
+        line-height: 1.75;
+        margin: 0 0 1.1rem;
+        color: #222;
+      }
+      .bio .contact {
+        margin-top: 2rem;
+        font-size: 0.95rem;
+        color: var(--muted);
+      }
+      .bio .contact a {
+        color: var(--fg);
+        text-decoration: none;
+        border-bottom: 1px solid var(--fg);
+        padding-bottom: 1px;
+        transition: opacity 0.25s var(--ease);
+      }
+      .bio .contact a:hover { opacity: 0.65; }
+
+      /* Reveal-on-load */
+      .portrait, .bio > * {
+        opacity: 0;
+        transform: translateY(14px);
+        animation: rise 0.7s var(--ease) forwards;
+      }
+      .portrait { animation-delay: 0.15s; }
+      .bio h1 { animation-delay: 0.25s; }
+      .bio .tagline { animation-delay: 0.32s; }
+      .bio p:nth-of-type(1) { animation-delay: 0.4s; }
+      .bio p:nth-of-type(2) { animation-delay: 0.5s; }
+      .bio p:nth-of-type(3) { animation-delay: 0.6s; }
+      .bio p:nth-of-type(4) { animation-delay: 0.7s; }
+      .bio .contact { animation-delay: 0.85s; }
+      @keyframes rise {
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .portrait, .bio > * { animation: none; opacity: 1; transform: none; }
+      }
+
+      footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--muted);
+        font-size: 0.8rem;
+        border-top: 1px solid var(--border);
+      }
+    </style>
+
+    <script is:inline data-astro-rerun>
+      const fadein = () => {
+        document.body.classList.remove('js-fadein');
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => document.body.classList.add('js-fadein'))
+        );
+      };
+      document.addEventListener('astro:page-load', fadein);
+      fadein();
+    </script>
+  </body>
+</html>

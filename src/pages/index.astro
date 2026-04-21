@@ -1,0 +1,968 @@
+---
+import { getCollection } from 'astro:content';
+
+const works = await getCollection('works');
+
+function youtubeId(url: string): string {
+  const m = url.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : '';
+}
+
+const items = works.map((w) => ({
+  slug: w.slug,
+  title: w.data.title,
+  client: w.data.client,
+  date: w.data.date.toISOString(),
+  tags: w.data.tags,
+  youtubeId: youtubeId(w.data.youtube),
+}));
+
+const FIXED_TAGS = ['TV', 'Radio', 'Digital'];
+const fixedTagsLower = FIXED_TAGS.map((t) => t.toLowerCase());
+const extraTags = Array.from(new Set(items.flatMap((i) => i.tags)))
+  .filter((t) => !fixedTagsLower.includes(t.toLowerCase()))
+  .sort();
+
+const allClients = Array.from(
+  new Set(items.map((i) => i.client).filter((c) => c && c !== '—'))
+).sort();
+const allTitles = Array.from(new Set(items.map((i) => i.title).filter(Boolean))).sort();
+
+// Unified suggestion index: [{ value, type }]
+const suggestionIndex = [
+  ...FIXED_TAGS.map((v) => ({ value: v.toUpperCase(), type: 'tag' })),
+  ...extraTags.map((v) => ({ value: v, type: 'tag' })),
+  ...allClients.map((v) => ({ value: v, type: 'client' })),
+  ...allTitles.map((v) => ({ value: v, type: 'work' })),
+];
+import { ViewTransitions } from 'astro:transitions';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Yishay Raziel — Music & Sound</title>
+    <meta
+      name="description"
+      content="Music and sound for advertising — portfolio of Yishay Raziel."
+    />
+    <ViewTransitions />
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  </head>
+  <body>
+    <div class="page">
+    <header class="site-header">
+      <a href="/" class="logo-link" aria-label="Home">
+        <img src="/logo.png" alt="Yishay Raziel — Music & Sound" class="logo" />
+      </a>
+      <nav class="top-nav" aria-label="Primary">
+        <a href="/" class="nav-link is-active" data-astro-prefetch>Works</a>
+        <a href="/about" class="nav-link" data-astro-prefetch>About</a>
+        <a href="/contact" class="nav-link" data-astro-prefetch>Contact</a>
+      </nav>
+    </header>
+
+    <nav class="controls" aria-label="Filter and sort">
+      <div class="tags" role="group" aria-label="Filter by tag">
+        <button class="tag active" data-tag="">All</button>
+        {FIXED_TAGS.map((t) => <button class="tag" data-tag={t}>{t}</button>)}
+        <div class="search" role="combobox" aria-expanded="false" aria-haspopup="listbox">
+          <svg class="search-icon" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+          <input
+            type="text"
+            id="tag-search"
+            placeholder="Search"
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Search works, clients, tags"
+            aria-autocomplete="list"
+            aria-controls="tag-suggestions"
+          />
+          <button type="button" id="tag-clear" class="search-clear" aria-label="Clear search" hidden>×</button>
+          <ul id="tag-suggestions" class="suggestions" role="listbox" hidden></ul>
+        </div>
+      </div>
+      <label class="sort">
+        Sort
+        <select id="sort">
+          <option value="date-desc">Newest first</option>
+          <option value="date-asc">Oldest first</option>
+          <option value="title-asc">Title A–Z</option>
+          <option value="client-asc">Client A–Z</option>
+        </select>
+      </label>
+    </nav>
+
+    <script id="suggestion-index" type="application/json" set:html={JSON.stringify(suggestionIndex)}></script>
+
+    <main>
+      <ul id="grid" class="grid">
+        {
+          items.map((item) => (
+            <li
+              class="card"
+              data-tags={item.tags.join(',')}
+              data-date={item.date}
+              data-title={item.title.toLowerCase()}
+              data-client={item.client.toLowerCase()}
+              data-youtube={item.youtubeId}
+            >
+              <button class="thumb" aria-label={`Play ${item.title}`}>
+                <img
+                  src={`https://i.ytimg.com/vi/${item.youtubeId}/hqdefault.jpg`}
+                  alt=""
+                  loading="lazy"
+                />
+                <div class="overlay">
+                  <div class="overlay-inner">
+                    <h2>{item.title}</h2>
+                    {item.client && item.client !== '—' && <p class="client">{item.client}</p>}
+                  </div>
+                </div>
+              </button>
+              <div class="meta">
+                <ul class="pills">
+                  {item.tags.map((t) => (
+                    <li>
+                      <button type="button" class="pill-btn" data-pill-tag={t}>{t}</button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+      <p id="empty" class="empty" hidden>No works match this filter.</p>
+    </main>
+
+    <dialog id="player">
+      <button id="close" aria-label="Close">×</button>
+      <div class="frame-wrap">
+        <iframe
+          id="frame"
+          allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </dialog>
+
+    <footer>
+      <p>© {new Date().getFullYear()} Yishay Raziel</p>
+    </footer>
+    </div>
+
+    <style>
+      :root {
+        --bg: #ffffff;
+        --fg: #000000;
+        --muted: #7a7a7a;
+        --accent: #000000;
+        --border: #e5e5e5;
+        --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+        font-weight: 300;
+        letter-spacing: 0.01em;
+        opacity: 0;
+        transition: opacity 0.35s var(--ease);
+      }
+      body.js-fadein { opacity: 1; }
+      .page {
+        transform: scale(0.98);
+        transition: transform 0.4s var(--ease);
+      }
+      body.js-fadein .page { transform: scale(1); }
+      @keyframes fade-in-up {
+        from { opacity: 0; transform: translateY(12px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fade-in {
+        from { opacity: 0; }
+        to   { opacity: 1; }
+      }
+      .site-header {
+        padding: 3rem 2rem 1.5rem;
+        text-align: center;
+        animation: fade-in 0.8s ease-out both;
+        position: relative;
+      }
+      .logo-link { display: inline-block; text-decoration: none; }
+      .logo {
+        width: clamp(180px, 22vw, 260px);
+        height: auto;
+        display: inline-block;
+        transition: transform 0.6s var(--ease);
+      }
+      .logo-link:hover .logo { transform: scale(1.02); }
+      .top-nav {
+        display: flex;
+        gap: 1.8rem;
+        justify-content: center;
+        margin-top: 1.2rem;
+      }
+      .nav-link {
+        font-size: 0.8rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: var(--muted);
+        padding: 0.25rem 0.1rem;
+        border-bottom: 1px solid transparent;
+        transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
+      }
+      .nav-link:hover { color: var(--fg); }
+      .nav-link.is-active { color: var(--fg); border-bottom-color: var(--fg); }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        background: rgba(255,255,255,0.85);
+        backdrop-filter: saturate(180%) blur(10px);
+        -webkit-backdrop-filter: saturate(180%) blur(10px);
+        z-index: 10;
+        animation: fade-in 0.8s 0.15s ease-out both;
+      }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      .search {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        border: 1px solid var(--border);
+        padding: 0.25rem 0.6rem;
+        gap: 0.5rem;
+        transition: border-color 0.2s ease, width 0.25s ease;
+        min-width: 2rem;
+      }
+      .search:focus-within { border-color: var(--fg); }
+      .search-icon {
+        color: var(--muted);
+        flex-shrink: 0;
+      }
+      .search input {
+        border: 0;
+        outline: 0;
+        background: transparent;
+        font: inherit;
+        font-size: 0.8rem;
+        letter-spacing: 0.05em;
+        color: var(--fg);
+        width: 10rem;
+        padding: 0.2rem 0;
+      }
+      .search input::placeholder {
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.75rem;
+      }
+      .search-clear {
+        background: transparent;
+        border: 0;
+        color: var(--muted);
+        font-size: 1.1rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0 0.15rem;
+        transition: color 0.15s ease;
+      }
+      .search-clear:hover { color: var(--fg); }
+      .suggestions {
+        list-style: none;
+        margin: 0;
+        padding: 0.3rem 0;
+        position: absolute;
+        top: calc(100% + 4px);
+        left: -1px;
+        right: -1px;
+        background: #fff;
+        border: 1px solid var(--border);
+        box-shadow: 0 12px 28px -14px rgba(0,0,0,0.2);
+        max-height: 280px;
+        overflow-y: auto;
+        z-index: 20;
+        animation: fade-in 0.15s ease-out;
+        min-width: 18rem;
+      }
+      .suggestions :global(li) {
+        padding: 0.45rem 0.8rem;
+        font-size: 0.8rem;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: background 0.1s ease;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+      .suggestions :global(li.highlight),
+      .suggestions :global(li:hover) { background: #f2f2f2; }
+      .suggestions :global(li mark) {
+        background: #fff59d;
+        color: var(--fg);
+        font-weight: 500;
+        padding: 0 2px;
+        border-radius: 2px;
+      }
+      .suggestions :global(.s-label) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+        min-width: 0;
+      }
+      .suggestions :global(.s-kind) {
+        font-size: 0.65rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        flex-shrink: 0;
+      }
+      .suggestions :global(li.empty) {
+        color: var(--muted);
+        cursor: default;
+        display: block;
+      }
+      .suggestions :global(li.empty:hover) { background: transparent; }
+      .suggestions :global(li.fuzzy .s-label) { color: var(--muted); }
+      .suggestions :global(li.fuzzy .s-kind) { font-style: italic; letter-spacing: 0.06em; text-transform: none; }
+      .suggestions :global(li.fuzzy-first) { border-top: 1px dashed var(--border); margin-top: 2px; padding-top: 0.55rem; }
+      .tag {
+        position: relative;
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--fg);
+        padding: 0.4rem 0.9rem;
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease, transform 0.2s ease;
+      }
+      .tag:hover { border-color: var(--fg); transform: translateY(-1px); }
+      .tag.active { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+      .sort {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--muted);
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .sort select {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--fg);
+        padding: 0.4rem 0.6rem;
+        font-size: 0.85rem;
+      }
+      main { padding: 2rem; }
+      .grid {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+      .card {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        opacity: 0;
+        transform: translateY(16px) scale(1);
+        transition:
+          opacity 0.7s var(--ease),
+          transform 0.5s var(--ease),
+          filter 0.3s var(--ease);
+        will-change: transform, opacity;
+      }
+      .card.in-view { opacity: 1; transform: translateY(0) scale(1); }
+      /* Grow-one / shrink-others — the "2wei move" */
+      .grid.has-hover .card { transform: scale(0.97); filter: saturate(0.85); }
+      .grid.has-hover .card.is-hovered { transform: scale(1.03); filter: saturate(1); }
+      @media (hover: none) { .grid.has-hover .card, .grid.has-hover .card.is-hovered { transform: none; filter: none; } }
+      .thumb {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        padding: 0;
+        border: 1px solid var(--border);
+        background: #f5f5f5;
+        cursor: pointer;
+        overflow: hidden;
+        transition: box-shadow 0.4s var(--ease);
+      }
+      .card.is-hovered .thumb { box-shadow: 0 18px 40px -16px rgba(0,0,0,0.28); }
+      .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.7s ease, opacity 0.3s ease, filter 0.4s ease;
+        filter: saturate(0.92);
+      }
+      .card.is-hovered .thumb img,
+      .thumb:hover img { transform: scale(1.06); filter: saturate(1.1); }
+
+      /* Title overlay — slides up from bottom on hover */
+      .overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: flex-end;
+        padding: 1rem 1.1rem;
+        background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0) 80%);
+        opacity: 0;
+        transition: opacity 0.4s var(--ease);
+        pointer-events: none;
+      }
+      .overlay-inner {
+        transform: translateY(14px);
+        transition: transform 0.45s var(--ease);
+        color: #fff;
+        text-align: left;
+        width: 100%;
+      }
+      .overlay-inner h2 {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: #fff;
+      }
+      .overlay-inner .client {
+        margin: 0.25rem 0 0;
+        font-size: 0.82rem;
+        color: rgba(255,255,255,0.82);
+        letter-spacing: 0.03em;
+      }
+      .card.is-hovered .overlay,
+      .thumb:hover .overlay,
+      .thumb:focus-visible .overlay {
+        opacity: 1;
+      }
+      .card.is-hovered .overlay-inner,
+      .thumb:hover .overlay-inner,
+      .thumb:focus-visible .overlay-inner {
+        transform: translateY(0);
+      }
+      /* Touch devices: show overlay statically so titles aren't hidden */
+      @media (hover: none) {
+        .overlay { opacity: 1; }
+        .overlay-inner { transform: translateY(0); }
+      }
+      .meta { padding: 0; }
+      .pills { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+      .pills li { display: inline-flex; }
+      .pill-btn {
+        font: inherit;
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        background: transparent;
+        border: 1px solid var(--border);
+        padding: 0.15rem 0.5rem;
+        cursor: pointer;
+        transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      }
+      .pill-btn:hover {
+        color: var(--fg);
+        border-color: var(--fg);
+        background: #fafafa;
+      }
+      .pill-btn.active {
+        color: var(--bg);
+        background: var(--fg);
+        border-color: var(--fg);
+      }
+      .empty { text-align: center; color: var(--muted); padding: 4rem 0; }
+
+      dialog#player {
+        border: 0;
+        padding: 0;
+        background: transparent;
+        max-width: min(1100px, 95vw);
+        width: 100%;
+        overflow: visible;
+      }
+      dialog#player[open] {
+        animation: dialog-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+      dialog#player.closing {
+        animation: dialog-out 0.3s ease-in both;
+      }
+      dialog#player::backdrop {
+        background: rgba(10, 10, 10, 0);
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+      }
+      dialog#player[open]::backdrop {
+        animation: backdrop-in 0.5s ease-out forwards;
+      }
+      dialog#player.closing::backdrop {
+        animation: backdrop-out 0.3s ease-in forwards;
+      }
+      @keyframes backdrop-in {
+        from { background: rgba(10, 10, 10, 0); backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+        to   { background: rgba(10, 10, 10, 0.92); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+      }
+      @keyframes backdrop-out {
+        from { background: rgba(10, 10, 10, 0.92); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        to   { background: rgba(10, 10, 10, 0); backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+      }
+      @keyframes dialog-in {
+        from { opacity: 0; transform: translateY(14px) scale(0.94); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      @keyframes dialog-out {
+        from { opacity: 1; transform: translateY(0) scale(1); }
+        to   { opacity: 0; transform: translateY(8px) scale(0.96); }
+      }
+      .thumb.launching { transform: scale(0.97); opacity: 0.85; transition: transform 0.25s ease, opacity 0.25s ease; }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.001ms !important;
+          transition-duration: 0.001ms !important;
+        }
+        .card { opacity: 1; transform: none; }
+      }
+      .frame-wrap { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; }
+      .frame-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+      #close {
+        position: absolute;
+        top: -2.75rem;
+        right: 0;
+        background: transparent;
+        border: 0;
+        color: rgba(255,255,255,0.7);
+        font-size: 1.5rem;
+        line-height: 1;
+        width: 2rem;
+        height: 2rem;
+        cursor: pointer;
+        opacity: 0;
+        animation: fade-in 0.35s 0.35s ease-out forwards;
+        transition: color 0.2s ease, transform 0.2s ease;
+      }
+      #close:hover { color: #fff; transform: rotate(90deg); }
+      footer {
+        padding: 3rem 2rem;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.8rem;
+        border-top: 1px solid var(--border);
+        margin-top: 2rem;
+      }
+    </style>
+
+    <script is:inline data-astro-rerun>
+      // Body fade-in — works on first load and after ClientRouter transitions
+      const fadein = () => {
+        document.body.classList.remove('js-fadein');
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => document.body.classList.add('js-fadein'))
+        );
+      };
+      document.addEventListener('astro:page-load', fadein);
+      fadein();
+      // Backstop: ensure cards are visible after any View Transition navigation back to /
+      const revealAllCards = () => {
+        document.querySelectorAll('#grid .card').forEach((c) => c.classList.add('in-view'));
+      };
+      document.addEventListener('astro:page-load', revealAllCards);
+      (() => {
+        const grid = document.getElementById('grid');
+        const empty = document.getElementById('empty');
+        const sortSel = document.getElementById('sort');
+        const tagBtns = document.querySelectorAll('.tag');
+        const player = document.getElementById('player');
+        const frame = document.getElementById('frame');
+        const closeBtn = document.getElementById('close');
+        const searchBox = document.querySelector('.search');
+        const searchInput = document.getElementById('tag-search');
+        const searchClear = document.getElementById('tag-clear');
+        const suggestions = document.getElementById('tag-suggestions');
+        const suggestionIndex = JSON.parse(
+          document.getElementById('suggestion-index')?.textContent || '[]'
+        );
+        const FIXED_TAGS_LOWER = ['tv', 'radio', 'digital'];
+
+        let activeQuery = null; // null = show all
+        let activeKind = null;  // 'button' | 'text'
+        let highlightIdx = -1;
+
+        function apply() {
+          const cards = Array.from(grid.querySelectorAll('.card'));
+          const mode = sortSel.value;
+          cards.sort((a, b) => {
+            if (mode === 'date-desc') return b.dataset.date.localeCompare(a.dataset.date);
+            if (mode === 'date-asc') return a.dataset.date.localeCompare(b.dataset.date);
+            if (mode === 'title-asc') return a.dataset.title.localeCompare(b.dataset.title);
+            if (mode === 'client-asc') return a.dataset.client.localeCompare(b.dataset.client);
+            return 0;
+          });
+          cards.forEach((c) => grid.appendChild(c));
+          let visible = 0;
+          const q = activeQuery ? activeQuery.toLowerCase() : null;
+          cards.forEach((c) => {
+            let show = true;
+            if (q) {
+              const tags = (c.dataset.tags || '').toLowerCase();
+              const title = c.dataset.title || '';
+              const client = c.dataset.client || '';
+              if (activeKind === 'button') {
+                // Exact tag match for fixed buttons
+                const tagList = tags.split(',').filter(Boolean);
+                show = tagList.includes(q);
+              } else {
+                // Substring across everything
+                show = tags.includes(q) || title.includes(q) || client.includes(q);
+              }
+            }
+            c.style.display = show ? '' : 'none';
+            if (show) {
+              visible++;
+              c.classList.add('in-view');
+            }
+          });
+          empty.hidden = visible > 0;
+        }
+
+        function setActive(query, kind) {
+          activeQuery = query;
+          activeKind = query ? kind : null;
+          tagBtns.forEach((b) => {
+            const btnTag = b.dataset.tag;
+            const isActive =
+              kind === 'button' && query
+                ? btnTag.toLowerCase() === query.toLowerCase()
+                : !query && btnTag === '';
+            b.classList.toggle('active', isActive);
+          });
+          // Highlight matching pills on the cards
+          const qLower = kind === 'button' && query ? query.toLowerCase() : null;
+          grid.querySelectorAll('.pill-btn').forEach((p) => {
+            const t = (p.dataset.pillTag || '').toLowerCase();
+            p.classList.toggle('active', qLower !== null && t === qLower);
+          });
+          if (query && kind === 'text') {
+            searchInput.value = query;
+            searchClear.hidden = false;
+          }
+          apply();
+        }
+
+        tagBtns.forEach((b) =>
+          b.addEventListener('click', () => {
+            const tag = b.dataset.tag;
+            searchInput.value = '';
+            searchClear.hidden = true;
+            closeSuggestions();
+            if (!tag || b.classList.contains('active')) {
+              setActive(null, null);
+            } else {
+              setActive(tag, 'button');
+            }
+          })
+        );
+
+        // Grow-one / shrink-others hover (desktop only)
+        if (matchMedia('(hover: hover)').matches) {
+          grid.addEventListener('mouseover', (e) => {
+            const card = e.target.closest('.card');
+            if (!card || card.classList.contains('is-hovered')) return;
+            grid.classList.add('has-hover');
+            grid.querySelectorAll('.card.is-hovered').forEach((c) => c.classList.remove('is-hovered'));
+            card.classList.add('is-hovered');
+          });
+          grid.addEventListener('mouseleave', () => {
+            grid.classList.remove('has-hover');
+            grid.querySelectorAll('.card.is-hovered').forEach((c) => c.classList.remove('is-hovered'));
+          });
+        }
+
+        // Clickable pill chips under each card — filter by that tag
+        grid.addEventListener('click', (e) => {
+          const pill = e.target.closest('.pill-btn');
+          if (!pill) return;
+          e.stopPropagation();
+          const tag = pill.dataset.pillTag;
+          searchInput.value = '';
+          searchClear.hidden = true;
+          closeSuggestions();
+          const alreadyActive =
+            activeKind === 'button' && activeQuery && activeQuery.toLowerCase() === tag.toLowerCase();
+          if (alreadyActive) {
+            setActive(null, null);
+          } else {
+            setActive(tag, 'button');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
+        sortSel.addEventListener('change', apply);
+
+        // --- Search autocomplete (tags, clients, works) ---
+        const TYPE_ORDER = { tag: 0, client: 1, work: 2 };
+        const TYPE_LABEL = { tag: 'Tag', client: 'Client', work: 'Work' };
+
+        // Damerau–Levenshtein distance (handles insert/delete/substitute/swap)
+        function editDistance(a, b) {
+          if (a === b) return 0;
+          const al = a.length, bl = b.length;
+          if (!al) return bl;
+          if (!bl) return al;
+          const dp = Array.from({ length: al + 1 }, () => new Array(bl + 1));
+          for (let i = 0; i <= al; i++) dp[i][0] = i;
+          for (let j = 0; j <= bl; j++) dp[0][j] = j;
+          for (let i = 1; i <= al; i++) {
+            for (let j = 1; j <= bl; j++) {
+              const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+              dp[i][j] = Math.min(
+                dp[i - 1][j] + 1,
+                dp[i][j - 1] + 1,
+                dp[i - 1][j - 1] + cost
+              );
+              if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+                dp[i][j] = Math.min(dp[i][j], dp[i - 2][j - 2] + 1);
+              }
+            }
+          }
+          return dp[al][bl];
+        }
+
+        // Best distance of query vs any word/prefix in the candidate value
+        function fuzzyScore(q, value) {
+          const v = value.toLowerCase();
+          if (v.includes(q)) return 0;
+          let best = Infinity;
+          // Compare against whole string and each word-prefix of same length as q
+          best = Math.min(best, editDistance(q, v.slice(0, q.length + 2)));
+          best = Math.min(best, editDistance(q, v));
+          for (const w of v.split(/[^a-z0-9]+/)) {
+            if (!w) continue;
+            best = Math.min(best, editDistance(q, w.slice(0, q.length + 2)));
+            if (best === 0) break;
+          }
+          return best;
+        }
+
+        function renderSuggestions(query) {
+          const q = query.trim().toLowerCase();
+          let matches = q
+            ? suggestionIndex.filter((s) => s.value.toLowerCase().includes(q))
+            : suggestionIndex.slice();
+          let fuzzyUsed = false;
+          // Fallback: fuzzy match when query is long enough and not many exact hits
+          if (q && q.length >= 3 && matches.length < 3) {
+            const threshold = q.length <= 4 ? 1 : q.length <= 7 ? 2 : 3;
+            const seen = new Set(matches.map((m) => m.value));
+            const fuzzy = suggestionIndex
+              .filter((s) => !seen.has(s.value))
+              .map((s) => ({ s, d: fuzzyScore(q, s.value) }))
+              .filter((x) => x.d > 0 && x.d <= threshold)
+              .sort((a, b) => a.d - b.d)
+              .slice(0, 8)
+              .map((x) => ({ ...x.s, _fuzzy: true, _dist: x.d }));
+            if (fuzzy.length) {
+              matches = matches.concat(fuzzy);
+              fuzzyUsed = true;
+            }
+          }
+          // Rank: exact first (starts-with before contains), then fuzzy; by type within
+          matches.sort((a, b) => {
+            const af = a._fuzzy ? 1 : 0, bf = b._fuzzy ? 1 : 0;
+            if (af !== bf) return af - bf;
+            if (!a._fuzzy) {
+              const ap = a.value.toLowerCase().startsWith(q) ? 0 : 1;
+              const bp = b.value.toLowerCase().startsWith(q) ? 0 : 1;
+              if (ap !== bp) return ap - bp;
+            } else {
+              if (a._dist !== b._dist) return a._dist - b._dist;
+            }
+            const at = TYPE_ORDER[a.type], bt = TYPE_ORDER[b.type];
+            if (at !== bt) return at - bt;
+            return a.value.localeCompare(b.value);
+          });
+          matches = matches.slice(0, 30);
+          highlightIdx = matches.length ? 0 : -1;
+          if (!matches.length) {
+            suggestions.innerHTML = '<li class="empty">No matches</li>';
+          } else {
+            const firstFuzzyIdx = matches.findIndex((m) => m._fuzzy);
+            suggestions.innerHTML = matches
+              .map((s, i) => {
+                const lower = s.value.toLowerCase();
+                const idx = q && !s._fuzzy ? lower.indexOf(q) : -1;
+                const label =
+                  idx >= 0
+                    ? s.value.slice(0, idx) +
+                      '<mark>' +
+                      s.value.slice(idx, idx + q.length) +
+                      '</mark>' +
+                      s.value.slice(idx + q.length)
+                    : s.value;
+                const headerCls = i === firstFuzzyIdx ? ' fuzzy-first' : '';
+                return `<li role="option" data-value="${s.value.replace(/"/g, '&quot;')}" class="${i === 0 ? 'highlight' : ''}${s._fuzzy ? ' fuzzy' : ''}${headerCls}"><span class="s-label">${label}</span><span class="s-kind">${s._fuzzy ? 'Did you mean?' : TYPE_LABEL[s.type]}</span></li>`;
+              })
+              .join('');
+          }
+          suggestions.hidden = false;
+          searchBox.setAttribute('aria-expanded', 'true');
+        }
+
+        function closeSuggestions() {
+          suggestions.hidden = true;
+          searchBox.setAttribute('aria-expanded', 'false');
+          highlightIdx = -1;
+        }
+
+        function selectSuggestion(value) {
+          searchInput.value = value;
+          searchClear.hidden = false;
+          closeSuggestions();
+          setActive(value, 'text');
+        }
+
+        function moveHighlight(delta) {
+          const items = suggestions.querySelectorAll('li:not(.empty)');
+          if (!items.length) return;
+          highlightIdx = (highlightIdx + delta + items.length) % items.length;
+          items.forEach((el, i) => el.classList.toggle('highlight', i === highlightIdx));
+          items[highlightIdx].scrollIntoView({ block: 'nearest' });
+        }
+
+        searchInput.addEventListener('focus', () => renderSuggestions(searchInput.value));
+        searchInput.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowDown') { e.preventDefault(); moveHighlight(1); }
+          else if (e.key === 'ArrowUp') { e.preventDefault(); moveHighlight(-1); }
+          else if (e.key === 'Enter') {
+            e.preventDefault();
+            const items = suggestions.querySelectorAll('li:not(.empty)');
+            if (items[highlightIdx]) selectSuggestion(items[highlightIdx].dataset.value);
+            else if (searchInput.value.trim()) setActive(searchInput.value.trim(), 'text');
+          } else if (e.key === 'Escape') {
+            closeSuggestions();
+            searchInput.blur();
+          }
+        });
+        // Live-filter as the user types (no need to pick a suggestion)
+        searchInput.addEventListener('input', () => {
+          const val = searchInput.value.trim();
+          searchClear.hidden = !val;
+          renderSuggestions(searchInput.value);
+          if (val) setActive(val, 'text');
+          else setActive(null, null);
+        }, true);
+        suggestions.addEventListener('click', (e) => {
+          const li = e.target.closest('li');
+          if (!li || li.classList.contains('empty')) return;
+          selectSuggestion(li.dataset.value);
+        });
+        searchClear.addEventListener('click', () => {
+          searchInput.value = '';
+          searchClear.hidden = true;
+          closeSuggestions();
+          setActive(null, null);
+          searchInput.focus();
+        });
+        document.addEventListener('click', (e) => {
+          if (!searchBox.contains(e.target)) closeSuggestions();
+        });
+
+        function closePlayer() {
+          player.classList.add('closing');
+          setTimeout(() => {
+            frame.src = '';
+            player.close();
+            player.classList.remove('closing');
+          }, 280);
+        }
+        grid.addEventListener('click', (e) => {
+          const thumb = e.target.closest('.thumb');
+          if (!thumb) return;
+          const id = thumb.closest('.card').dataset.youtube;
+          if (!id) return;
+          thumb.classList.add('launching');
+          setTimeout(() => thumb.classList.remove('launching'), 280);
+          // autoplay + mute guarantees the video starts immediately (browsers
+          // block unmuted autoplay). We unmute as soon as playback begins so
+          // the user hears sound within ~200ms without a second click.
+          const params = 'autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1&controls=1&enablejsapi=1';
+          frame.src = `https://www.youtube-nocookie.com/embed/${id}?${params}`;
+          player.showModal();
+          // Unmute once the player reports it has started (YouTube iframe API).
+          const unmute = () => {
+            try {
+              frame.contentWindow?.postMessage(
+                '{"event":"command","func":"unMute","args":""}',
+                '*'
+              );
+            } catch {}
+          };
+          // Try a few times since the player needs a moment to initialise.
+          [250, 600, 1200].forEach((t) => setTimeout(unmute, t));
+        });
+        closeBtn.addEventListener('click', closePlayer);
+        player.addEventListener('click', (e) => {
+          if (e.target === player) closePlayer();
+        });
+        player.addEventListener('cancel', (e) => {
+          e.preventDefault();
+          closePlayer();
+        });
+
+        apply();
+
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry, i) => {
+              if (entry.isIntersecting) {
+                const el = entry.target;
+                setTimeout(() => el.classList.add('in-view'), i * 50);
+                io.unobserve(el);
+              }
+            });
+          },
+          { rootMargin: '0px 0px -40px 0px', threshold: 0.05 }
+        );
+        grid.querySelectorAll('.card').forEach((c) => io.observe(c));
+      })();
+    </script>
+    <script is:inline>
+      // Netlify Identity redirect after login/signup → /admin
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on('init', (user) => {
+          if (!user) {
+            window.netlifyIdentity.on('login', () => {
+              document.location.href = '/admin/';
+            });
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

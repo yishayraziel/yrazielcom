@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "astro-dev",
+      "runtimeExecutable": "/opt/homebrew/bin/npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 4321
+    },
+    {
+      "name": "decap-server",
+      "runtimeExecutable": "/opt/homebrew/bin/npx",
+      "runtimeArgs": ["-y", "decap-server"],
+      "port": 8081
+    }
+  ]
+}

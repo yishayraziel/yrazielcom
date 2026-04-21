@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:yraziel.com)",
+      "Bash(npm install *)",
+      "Bash(brew --version)",
+      "Bash(brew install *)",
+      "Bash(/opt/homebrew/bin/npm install *)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(curl -sL \"https://static.wixstatic.com/media/f70e8b_e38ce79017724e75a4442f02123345f9~mv2.png\" -o \"/Users/yishayraziel/Pro-Team Dropbox/Yishay Raziel/workin on/claude/public/logo.png\")",
+      "Bash(curl -sL \"https://yraziel.com/sitemap.xml\")",
+      "Bash(curl -sL \"https://www.yraziel.com/pages-sitemap.xml\")",
+      "Bash(curl -sL \"https://yraziel.com/\")",
+      "Bash(curl -sL \"https://yraziel.com/\" -o /tmp/yraziel.html)",
+      "Read(//tmp/**)",
+      "Bash(python3)",
+      "Bash(python3 /tmp/import_works.py)",
+      "Bash(ipconfig getifaddr *)",
+      "WebFetch(domain:2wei.audio)",
+      "Bash(curl -sL -A \"Mozilla/5.0 \\(Macintosh; Intel Mac OS X 10_15_7\\) AppleWebKit/537.36\" \"https://2wei.audio/home/music-for-commercials/\" -o /tmp/2wei.html)",
+      "Bash(sed -n '1,120p' /tmp/2wei.html)",
+      "Bash(curl -sL \"https://2wei.audio/wp-content/themes/2wei/assets/js/scriptstuff.js\" -o /tmp/2wei.js)",
+      "Bash(curl -sL \"https://2wei.audio/wp-content/themes/2wei/style.css\" -o /tmp/2wei.css)",
+      "WebFetch(domain:www.yraziel.com)",
+      "Bash(curl -sL \"https://static.wixstatic.com/media/f70e8b_02d2021e619f4cce82ef0b317a76a74b~mv2_d_2774_1849_s_2.jpg/v1/fill/w_1200,h_800,al_c,q_85/f70e8b_02d2021e619f4cce82ef0b317a76a74b~mv2_d_2774_1849_s_2.jpg\" -o yishay-portrait.jpg)",
+      "Bash(npm run *)"
+    ]
+  }
+}

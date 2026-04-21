@@ -1,0 +1,318 @@
+---
+import { ViewTransitions } from 'astro:transitions';
+// Contact page
+const socials = [
+  { name: 'Vimeo', url: 'https://vimeo.com/yrazielcom' },
+  { name: 'YouTube', url: 'https://youtube.com/user/yraziel' },
+  { name: 'Facebook', url: 'https://facebook.com/yraziel' },
+  { name: 'Instagram', url: 'https://instagram.com/yraziel' },
+  { name: 'LinkedIn', url: 'https://linkedin.com/in/yraziel' },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contact — Yishay Raziel</title>
+    <meta
+      name="description"
+      content="Get in touch with Yishay Raziel — music and sound for advertising."
+    />
+    <ViewTransitions />
+  </head>
+  <body>
+    <div class="page">
+      <header class="site-header">
+        <a href="/" class="logo-link" aria-label="Home">
+          <img src="/logo.png" alt="Yishay Raziel — Music & Sound" class="logo" />
+        </a>
+        <nav class="top-nav" aria-label="Primary">
+          <a href="/" class="nav-link" data-astro-prefetch>Works</a>
+          <a href="/about" class="nav-link" data-astro-prefetch>About</a>
+          <a href="/contact" class="nav-link is-active" data-astro-prefetch>Contact</a>
+        </nav>
+      </header>
+
+      <main class="contact">
+        <section class="intro">
+          <h1>Contact me</h1>
+          <p class="lead">Drop me a line — or give me a call.</p>
+        </section>
+
+        <section class="details">
+          <div class="detail">
+            <span class="label">Email</span>
+            <a class="value" href="mailto:y@yraziel.com">y@yraziel.com</a>
+          </div>
+          <div class="detail">
+            <span class="label">Phone</span>
+            <a class="value" href="tel:+972507902902">+972 50-790-2902</a>
+          </div>
+          <div class="detail">
+            <span class="label">Studio</span>
+            <span class="value">Tel Aviv, Israel</span>
+          </div>
+        </section>
+
+        <form
+          class="contact-form"
+          name="contact"
+          method="POST"
+          action="https://formsubmit.co/y@yraziel.com"
+        >
+          <input type="hidden" name="_subject" value="New message from yraziel.com" />
+          <input type="hidden" name="_captcha" value="false" />
+          <input type="hidden" name="_next" value="/contact?sent=1" />
+          <div class="field">
+            <label for="name">Your name</label>
+            <input id="name" name="name" type="text" required autocomplete="name" />
+          </div>
+          <div class="field">
+            <label for="email">Your email</label>
+            <input id="email" name="email" type="email" required autocomplete="email" />
+          </div>
+          <div class="field">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="send-btn">Send</button>
+          <p class="sent-note" id="sent-note" hidden>Thanks — your message is on its way.</p>
+        </form>
+
+        <section class="socials">
+          <span class="label">Also here</span>
+          <ul>
+            {socials.map((s) => (
+              <li>
+                <a href={s.url} target="_blank" rel="noopener noreferrer">{s.name}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </main>
+
+      <footer>
+        <p>© {new Date().getFullYear()} Yishay Raziel Music for Advertising Ltd.</p>
+      </footer>
+    </div>
+
+    <style>
+      :root {
+        --bg: #ffffff;
+        --fg: #000000;
+        --muted: #7a7a7a;
+        --border: #e5e5e5;
+        --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+        font-weight: 300;
+        letter-spacing: 0.01em;
+        opacity: 0;
+        transition: opacity 0.35s var(--ease);
+      }
+      body.js-fadein { opacity: 1; }
+      .page {
+        transform: scale(0.98);
+        transition: transform 0.4s var(--ease);
+      }
+      body.js-fadein .page { transform: scale(1); }
+
+      /* Header */
+      .site-header { padding: 3rem 2rem 1.5rem; text-align: center; position: relative; }
+      .logo-link { display: inline-block; text-decoration: none; }
+      .logo {
+        width: clamp(180px, 22vw, 260px);
+        height: auto;
+        display: inline-block;
+        transition: transform 0.6s var(--ease);
+      }
+      .logo-link:hover .logo { transform: scale(1.02); }
+      .top-nav { display: flex; gap: 1.8rem; justify-content: center; margin-top: 1.2rem; }
+      .nav-link {
+        font-size: 0.8rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: var(--muted);
+        padding: 0.25rem 0.1rem;
+        border-bottom: 1px solid transparent;
+        transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
+      }
+      .nav-link:hover { color: var(--fg); }
+      .nav-link.is-active { color: var(--fg); border-bottom-color: var(--fg); }
+
+      /* Contact layout */
+      .contact {
+        max-width: 720px;
+        margin: 3rem auto 6rem;
+        padding: 0 2rem;
+      }
+      .intro h1 {
+        margin: 0 0 0.4rem;
+        font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+        font-weight: 300;
+        letter-spacing: 0.02em;
+      }
+      .intro .lead {
+        margin: 0 0 2.5rem;
+        color: var(--muted);
+        font-size: 1rem;
+      }
+
+      .details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.5rem 2.5rem;
+        padding: 1.8rem 0;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 3rem;
+      }
+      .detail { display: flex; flex-direction: column; gap: 0.3rem; }
+      .label {
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .value {
+        font-size: 1rem;
+        color: var(--fg);
+        text-decoration: none;
+        transition: opacity 0.25s var(--ease);
+      }
+      a.value {
+        border-bottom: 1px solid transparent;
+        padding-bottom: 1px;
+      }
+      a.value:hover { border-bottom-color: var(--fg); }
+
+      /* Form */
+      .contact-form {
+        display: grid;
+        gap: 1.2rem;
+        margin-bottom: 3.5rem;
+      }
+      .field { display: flex; flex-direction: column; gap: 0.4rem; }
+      .field label {
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .field input,
+      .field textarea {
+        font: inherit;
+        font-size: 0.95rem;
+        color: var(--fg);
+        background: transparent;
+        border: 0;
+        border-bottom: 1px solid var(--border);
+        padding: 0.6rem 0.1rem;
+        transition: border-color 0.3s var(--ease);
+        outline: none;
+        resize: vertical;
+      }
+      .field input:focus,
+      .field textarea:focus {
+        border-bottom-color: var(--fg);
+      }
+      .send-btn {
+        justify-self: start;
+        margin-top: 0.5rem;
+        font: inherit;
+        font-size: 0.8rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--fg);
+        background: transparent;
+        border: 1px solid var(--fg);
+        padding: 0.75rem 2.2rem;
+        cursor: pointer;
+        transition: background 0.3s var(--ease), color 0.3s var(--ease);
+      }
+      .send-btn:hover { background: var(--fg); color: var(--bg); }
+      .sent-note {
+        margin: 0.5rem 0 0;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+
+      /* Socials */
+      .socials {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border);
+      }
+      .socials ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem 1.4rem;
+      }
+      .socials a {
+        font-size: 0.85rem;
+        color: var(--fg);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
+        padding-bottom: 1px;
+        transition: border-color 0.25s var(--ease), opacity 0.25s var(--ease);
+      }
+      .socials a:hover { border-bottom-color: var(--fg); }
+
+      /* Reveal on load */
+      .intro, .details, .contact-form, .socials {
+        opacity: 0;
+        transform: translateY(14px);
+        animation: rise 0.7s var(--ease) forwards;
+      }
+      .intro { animation-delay: 0.15s; }
+      .details { animation-delay: 0.3s; }
+      .contact-form { animation-delay: 0.45s; }
+      .socials { animation-delay: 0.6s; }
+      @keyframes rise {
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .intro, .details, .contact-form, .socials { animation: none; opacity: 1; transform: none; }
+      }
+
+      footer {
+        text-align: center;
+        padding: 2rem;
+        color: var(--muted);
+        font-size: 0.8rem;
+        border-top: 1px solid var(--border);
+      }
+    </style>
+
+    <script is:inline data-astro-rerun>
+      const fadein = () => {
+        document.body.classList.remove('js-fadein');
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() => document.body.classList.add('js-fadein'))
+        );
+      };
+      document.addEventListener('astro:page-load', fadein);
+      fadein();
+      document.addEventListener('astro:page-load', () => {
+        if (new URLSearchParams(location.search).get('sent') === '1') {
+          const note = document.getElementById('sent-note');
+          if (note) note.hidden = false;
+          history.replaceState(null, '', '/contact');
+        }
+      });
+    </script>
+  </body>
+</html>
