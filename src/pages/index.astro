@@ -174,15 +174,15 @@ import { ViewTransitions } from 'astro:transitions';
         font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
         font-weight: 300;
         letter-spacing: 0.01em;
-        opacity: 0;
-        transition: opacity 0.35s var(--ease);
+        animation: fade-in 0.35s var(--ease) both;
       }
-      body.js-fadein { opacity: 1; }
       .page {
-        transform: scale(0.98);
-        transition: transform 0.4s var(--ease);
+        animation: page-scale-in 0.4s var(--ease) both;
       }
-      body.js-fadein .page { transform: scale(1); }
+      @keyframes page-scale-in {
+        from { transform: scale(0.98); }
+        to   { transform: scale(1); }
+      }
       @keyframes fade-in-up {
         from { opacity: 0; transform: translateY(12px); }
         to   { opacity: 1; transform: translateY(0); }
