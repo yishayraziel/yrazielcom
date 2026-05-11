@@ -1,0 +1,470 @@
+---
+// MP3/WAV → VOX (Dialogic ADPCM) converter, fully client-side.
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>VOX Converter — Yishay Raziel</title>
+    <meta
+      name="description"
+      content="Convert MP3 and WAV audio files to Dialogic VOX (ADPCM) format in your browser."
+    />
+  </head>
+  <body>
+    <div class="page">
+      <header class="site-header">
+        <a href="/" class="logo-link" aria-label="Home">
+          <img src="/logo.png" alt="Yishay Raziel — Music & Sound" class="logo" />
+        </a>
+        <nav class="top-nav" aria-label="Primary">
+          <a href="/" class="nav-link" data-astro-prefetch>Works</a>
+          <a href="/about" class="nav-link" data-astro-prefetch>About</a>
+          <a href="/contact" class="nav-link" data-astro-prefetch>Contact</a>
+        </nav>
+      </header>
+
+      <main class="vox">
+        <section class="intro">
+          <h1>VOX Converter</h1>
+          <p class="lead">
+            Convert MP3 or WAV to Dialogic <strong>.vox</strong> (4-bit ADPCM). Everything
+            happens in your browser — files never leave your device.
+          </p>
+        </section>
+
+        <section class="tool">
+          <div class="drop-zone" id="drop-zone" tabindex="0" role="button" aria-label="Choose or drop audio files">
+            <input
+              id="file-input"
+              type="file"
+              accept=".mp3,.wav,audio/mpeg,audio/wav,audio/x-wav"
+              multiple
+              hidden
+            />
+            <div class="drop-inner">
+              <svg viewBox="0 0 24 24" width="36" height="36" aria-hidden="true">
+                <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <p class="drop-title">Drop MP3 or WAV here</p>
+              <p class="drop-sub">or click to choose files</p>
+            </div>
+          </div>
+
+          <div class="options" role="group" aria-label="Conversion options">
+            <div class="opt">
+              <label for="rate">Sample rate</label>
+              <select id="rate">
+                <option value="8000" selected>8000 Hz (standard)</option>
+                <option value="6000">6000 Hz</option>
+              </select>
+            </div>
+            <div class="opt">
+              <label for="gain">Gain</label>
+              <select id="gain">
+                <option value="1" selected>0 dB</option>
+                <option value="1.4125375">+3 dB</option>
+                <option value="2">+6 dB</option>
+                <option value="0.7079458">-3 dB</option>
+                <option value="0.5">-6 dB</option>
+              </select>
+            </div>
+          </div>
+
+          <ul class="files" id="files" aria-live="polite"></ul>
+        </section>
+
+        <section class="info">
+          <h2>About VOX</h2>
+          <p>
+            Dialogic VOX is a raw 4-bit ADPCM format widely used in telephony, IVR systems
+            and voicemail. Files have no header — just packed nibbles, two samples per byte
+            (high nibble first). The decoder needs to know the sample rate externally;
+            6&nbsp;kHz and 8&nbsp;kHz are the typical choices.
+          </p>
+          <p class="muted">
+            Stereo input is automatically mixed to mono. Output range is clipped to 12-bit
+            (−2048…2047) before encoding.
+          </p>
+        </section>
+      </main>
+
+      <footer>
+        <p>© {new Date().getFullYear()} Yishay Raziel Music for Advertising Ltd.</p>
+      </footer>
+    </div>
+
+    <script is:inline>
+      // ---------- Dialogic ADPCM encoder ----------
+      const STEP_TABLE = [
+        16, 17, 19, 21, 23, 25, 28, 31,
+        34, 37, 41, 45, 50, 55, 60, 66,
+        73, 80, 88, 97, 107, 118, 130, 143,
+        157, 173, 190, 209, 230, 253, 279, 307,
+        337, 371, 408, 449, 494, 544, 598, 658,
+        724, 796, 876, 963, 1060, 1166, 1282, 1411,
+        1552,
+      ];
+      const INDEX_TABLE = [-1, -1, -1, -1, 2, 4, 6, 8];
+
+      function encodeDialogic(pcm12) {
+        // pcm12: Int16Array of samples already clamped to 12-bit range.
+        const out = new Uint8Array(Math.ceil(pcm12.length / 2));
+        let predictor = 0;
+        let index = 0;
+        let highNibble = true;
+        let byte = 0;
+        let outPos = 0;
+
+        for (let i = 0; i < pcm12.length; i++) {
+          const sample = pcm12[i];
+          let diff = sample - predictor;
+          let sign = 0;
+          if (diff < 0) { sign = 8; diff = -diff; }
+
+          const step = STEP_TABLE[index];
+          let delta = 0;
+          let diffq = step >> 3;
+
+          if (diff >= step) { delta = 4; diff -= step; diffq += step; }
+          if (diff >= (step >> 1)) { delta |= 2; diff -= step >> 1; diffq += step >> 1; }
+          if (diff >= (step >> 2)) { delta |= 1; diffq += step >> 2; }
+
+          if (sign) predictor -= diffq; else predictor += diffq;
+          if (predictor > 2047) predictor = 2047;
+          else if (predictor < -2048) predictor = -2048;
+
+          index += INDEX_TABLE[delta];
+          if (index < 0) index = 0;
+          else if (index > 48) index = 48;
+
+          const nibble = (sign | delta) & 0x0f;
+          if (highNibble) {
+            byte = nibble << 4;
+            highNibble = false;
+          } else {
+            byte |= nibble;
+            out[outPos++] = byte;
+            highNibble = true;
+          }
+        }
+        if (!highNibble) out[outPos++] = byte;
+        return out;
+      }
+
+      // ---------- Decode + resample via Web Audio API ----------
+      async function decodeFile(file) {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        try {
+          const buf = await file.arrayBuffer();
+          // Some Safari versions require callback form.
+          const audio = await new Promise((resolve, reject) => {
+            ctx.decodeAudioData(buf.slice(0), resolve, reject);
+          });
+          return audio;
+        } finally {
+          ctx.close();
+        }
+      }
+
+      async function resampleToMono(audioBuffer, targetRate) {
+        const duration = audioBuffer.duration;
+        const length = Math.max(1, Math.ceil(duration * targetRate));
+        // OfflineAudioContext minimum sample rate varies; 6000/8000 are supported in modern browsers.
+        const offline = new OfflineAudioContext(1, length, targetRate);
+        const src = offline.createBufferSource();
+        src.buffer = audioBuffer;
+        // Downmix to mono explicitly.
+        const merger = offline.createGain();
+        merger.channelCount = 1;
+        merger.channelCountMode = 'explicit';
+        merger.channelInterpretation = 'speakers';
+        src.connect(merger).connect(offline.destination);
+        src.start(0);
+        const rendered = await offline.startRendering();
+        return rendered.getChannelData(0);
+      }
+
+      function floatToPcm12(float32, gain) {
+        const out = new Int16Array(float32.length);
+        for (let i = 0; i < float32.length; i++) {
+          let s = float32[i] * gain;
+          if (s > 1) s = 1; else if (s < -1) s = -1;
+          // 12-bit signed range
+          let v = Math.round(s * 2047);
+          if (v > 2047) v = 2047; else if (v < -2048) v = -2048;
+          out[i] = v;
+        }
+        return out;
+      }
+
+      function download(filename, bytes) {
+        const blob = new Blob([bytes], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      function fmtBytes(n) {
+        if (n < 1024) return n + ' B';
+        if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+        return (n / (1024 * 1024)).toFixed(2) + ' MB';
+      }
+
+      // ---------- UI ----------
+      const dropZone = document.getElementById('drop-zone');
+      const fileInput = document.getElementById('file-input');
+      const filesList = document.getElementById('files');
+      const rateSel = document.getElementById('rate');
+      const gainSel = document.getElementById('gain');
+
+      dropZone.addEventListener('click', () => fileInput.click());
+      dropZone.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+      });
+      ['dragenter', 'dragover'].forEach((ev) =>
+        dropZone.addEventListener(ev, (e) => {
+          e.preventDefault();
+          dropZone.classList.add('is-hover');
+        }),
+      );
+      ['dragleave', 'drop'].forEach((ev) =>
+        dropZone.addEventListener(ev, (e) => {
+          e.preventDefault();
+          dropZone.classList.remove('is-hover');
+        }),
+      );
+      dropZone.addEventListener('drop', (e) => {
+        if (e.dataTransfer && e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+      });
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files && fileInput.files.length) handleFiles(fileInput.files);
+        fileInput.value = '';
+      });
+
+      function rowFor(file) {
+        const li = document.createElement('li');
+        li.className = 'file';
+        li.innerHTML = `
+          <div class="meta">
+            <span class="name"></span>
+            <span class="size"></span>
+          </div>
+          <div class="status">Reading…</div>
+          <div class="actions"></div>
+        `;
+        li.querySelector('.name').textContent = file.name;
+        li.querySelector('.size').textContent = fmtBytes(file.size);
+        filesList.prepend(li);
+        return li;
+      }
+
+      async function handleFiles(fileList) {
+        const rate = parseInt(rateSel.value, 10);
+        const gain = parseFloat(gainSel.value);
+        for (const file of Array.from(fileList)) {
+          const row = rowFor(file);
+          const statusEl = row.querySelector('.status');
+          const actionsEl = row.querySelector('.actions');
+          try {
+            statusEl.textContent = 'Decoding…';
+            const audio = await decodeFile(file);
+            statusEl.textContent = `Resampling to ${rate} Hz…`;
+            const mono = await resampleToMono(audio, rate);
+            statusEl.textContent = 'Encoding ADPCM…';
+            const pcm12 = floatToPcm12(mono, gain);
+            const vox = encodeDialogic(pcm12);
+
+            const baseName = file.name.replace(/\.[^.]+$/, '') || 'audio';
+            const outName = `${baseName}.vox`;
+
+            statusEl.innerHTML = `<span class="ok">Done</span> · ${fmtBytes(vox.length)} · ${rate} Hz`;
+            const btn = document.createElement('button');
+            btn.className = 'dl';
+            btn.type = 'button';
+            btn.textContent = `Download ${outName}`;
+            btn.addEventListener('click', () => download(outName, vox));
+            actionsEl.appendChild(btn);
+
+            // Auto-download for convenience.
+            download(outName, vox);
+          } catch (err) {
+            console.error(err);
+            statusEl.innerHTML = `<span class="err">Failed</span> — ${(err && err.message) || 'could not decode file'}`;
+          }
+        }
+      }
+    </script>
+
+    <style>
+      :root {
+        --bg: #ffffff;
+        --fg: #000000;
+        --muted: #7a7a7a;
+        --border: #e5e5e5;
+        --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+        font-weight: 300;
+        letter-spacing: 0.01em;
+        animation: fade-in 0.35s var(--ease) both;
+      }
+      @keyframes fade-in { from { opacity: 0 } to { opacity: 1 } }
+      .page { animation: page-scale-in 0.4s var(--ease) both; }
+      @keyframes page-scale-in { from { transform: scale(0.98); } to { transform: scale(1); } }
+
+      .site-header { padding: 3rem 2rem 1.5rem; text-align: center; }
+      .logo-link { display: inline-block; text-decoration: none; }
+      .logo {
+        width: clamp(180px, 22vw, 260px);
+        height: auto;
+        transition: transform 0.6s var(--ease);
+      }
+      .logo:hover { transform: scale(1.02); }
+      .top-nav {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        margin-top: 1.25rem;
+        font-size: 0.78rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+      .nav-link {
+        color: var(--muted);
+        text-decoration: none;
+        transition: color 0.2s var(--ease);
+      }
+      .nav-link:hover, .nav-link.is-active { color: var(--fg); }
+
+      main.vox {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem 4rem;
+      }
+      .intro h1 {
+        font-weight: 300;
+        font-size: clamp(2rem, 4vw, 2.6rem);
+        margin: 0 0 0.5rem;
+        letter-spacing: -0.01em;
+      }
+      .intro .lead { color: var(--muted); margin: 0 0 2rem; font-size: 1rem; }
+      .intro strong { font-weight: 500; color: var(--fg); }
+
+      .drop-zone {
+        border: 1px dashed var(--border);
+        border-radius: 4px;
+        padding: 2.5rem 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+        outline: none;
+      }
+      .drop-zone:hover, .drop-zone:focus-visible, .drop-zone.is-hover {
+        border-color: var(--fg);
+        background: #fafafa;
+      }
+      .drop-inner svg { color: var(--fg); }
+      .drop-title { margin: 0.75rem 0 0.25rem; font-weight: 400; }
+      .drop-sub { margin: 0; color: var(--muted); font-size: 0.9rem; }
+
+      .options {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin: 1.5rem 0 0.5rem;
+      }
+      .opt { display: flex; flex-direction: column; gap: 0.35rem; min-width: 180px; }
+      .opt label {
+        font-size: 0.72rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .opt select {
+        appearance: none;
+        -webkit-appearance: none;
+        background: transparent;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        padding: 0.55rem 0.75rem;
+        font: inherit;
+        color: var(--fg);
+        cursor: pointer;
+        transition: border-color 0.2s var(--ease);
+      }
+      .opt select:hover, .opt select:focus { border-color: var(--fg); outline: none; }
+
+      .files {
+        list-style: none;
+        padding: 0;
+        margin: 2rem 0 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .file {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-areas: "meta actions" "status status";
+        gap: 0.5rem 1rem;
+        padding: 0.9rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        align-items: center;
+      }
+      .file .meta { grid-area: meta; display: flex; flex-direction: column; }
+      .file .name { font-weight: 400; }
+      .file .size { font-size: 0.8rem; color: var(--muted); }
+      .file .status { grid-area: status; font-size: 0.85rem; color: var(--muted); }
+      .file .actions { grid-area: actions; }
+      .file .ok { color: #0a7d2c; font-weight: 500; }
+      .file .err { color: #b80a0a; font-weight: 500; }
+      .dl {
+        appearance: none;
+        background: transparent;
+        border: 1px solid var(--fg);
+        color: var(--fg);
+        padding: 0.5rem 0.9rem;
+        font: inherit;
+        font-size: 0.85rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background 0.2s var(--ease), color 0.2s var(--ease);
+      }
+      .dl:hover { background: var(--fg); color: var(--bg); }
+
+      .info { margin-top: 3rem; }
+      .info h2 {
+        font-weight: 400;
+        font-size: 1rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 0.75rem;
+      }
+      .info p { margin: 0 0 0.75rem; line-height: 1.6; }
+      .info .muted { color: var(--muted); font-size: 0.9rem; }
+
+      footer {
+        padding: 2rem;
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.8rem;
+        border-top: 1px solid var(--border);
+      }
+    </style>
+  </body>
+</html>
