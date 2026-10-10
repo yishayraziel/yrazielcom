@@ -2,13 +2,58 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111a31"><meta name="description" content="Convert WAV or MP3 into raw G.711 A-law VOX, 8000 Hz mono. Private, browser-based conversion.">
+<meta name="theme-color" content="#050505"><meta name="description" content="Convert WAV or MP3 into raw G.711 A-law VOX, 8000 Hz mono. Private, browser-based conversion.">
 <title>yraziel IVR Converter — WAV / MP3 to telephony formats</title>
 <style>
-:root{color-scheme:dark;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#263d68 0%,#111a31 46%,#0b1223 100%);min-height:100vh;color:#edf3ff;padding:40px 18px}main{max-width:590px;margin:0 auto}.hero{text-align:center;margin:18px 0 32px}.logo{display:inline-grid;place-items:center;width:74px;height:74px;border-radius:20px;background:linear-gradient(135deg,#6a9fff,#485ee5);box-shadow:0 14px 36px #3057dc55;font-size:34px}.hero h1{font-size:34px;letter-spacing:-1px;margin:15px 0 5px}.hero p{color:#adbedb;margin:0;font-size:15px}.panel{background:#18243a;border:1px solid #34435c;border-radius:22px;padding:25px;box-shadow:0 20px 60px #0003}.drop{border:2px dashed #647da5;border-radius:17px;background:#1f304b;padding:36px 18px;text-align:center;cursor:pointer;transition:.15s;display:block}.drop.drag{border-color:#9ac6ff;background:#2e4367}.drop strong{display:block;font-size:18px;margin-bottom:6px}.drop span{color:#bdcce4;font-size:13px}.drop .fileicon{display:block;font-size:34px;margin-bottom:10px}input[type=file]{position:absolute;opacity:0;width:1px;height:1px}.head{margin:24px 0 12px;font-size:14px;font-weight:700;color:#d3def0}.settings{background:#101c2f;border:1px solid #35445b;border-radius:14px;overflow:hidden}.setting{display:flex;justify-content:space-between;align-items:center;padding:15px 17px;border-bottom:1px solid #293851;gap:12px;font-size:14px}.setting:last-child{border:0}.setting b{color:#a9d2ff;font-weight:600;text-align:right}.btn{width:100%;margin-top:24px;border:0;background:#5c91f7;color:#fff;font-weight:750;font-size:16px;border-radius:13px;padding:16px;cursor:pointer}.btn:disabled{background:#466287;color:#ced7e7;cursor:not-allowed}.btn.secondary{background:#253955;border:1px solid #58749b;margin-top:12px}.muted{font-size:12px;text-align:center;color:#a8bad1;line-height:1.6;margin-top:17px}.result{margin-top:17px;padding:14px;background:#173d34;border:1px solid #3d8c73;border-radius:12px;overflow-wrap:anywhere;display:none}.result.show{display:block}.preview-label{font-size:13px;font-weight:700;color:#dcf4e8;margin:17px 0 9px}.result audio{display:block;width:100%;height:44px;max-width:100%;border-radius:12px}.format-choice{display:block;background:#101c2f;border:1px solid #35445b;border-radius:14px;padding:14px 16px}.format-choice span{display:block;color:#b9cbed;font-size:13px;margin-bottom:9px}.format-choice select{display:block;width:100%;min-height:45px;background:#243650;color:#f2f6ff;border:1px solid #60789b;border-radius:10px;padding:10px;font-size:15px}.result .meta{font-size:13px;color:#b7e6d6;margin-top:5px}.error{margin-top:15px;border-radius:12px;padding:13px;background:#49242d;color:#ffd2d9;display:none;font-size:14px}.error.show{display:block}.progress{display:none;margin-top:16px;color:#b9cbed;text-align:center;font-size:14px}.progress.show{display:block}footer{text-align:center;color:#8a9dbb;font-size:12px;line-height:1.7;margin-top:24px}a{color:#b4d0ff}@media(max-width:500px){body{padding:22px 12px}.panel{padding:17px}.hero h1{font-size:29px}}
+:root{color-scheme:dark;font-family:Inter,Arial,Helvetica,sans-serif}
+*{box-sizing:border-box}
+html{background:#050505}
+body{margin:0;min-height:100vh;color:#f6f6f6;background:radial-gradient(ellipse at 50% 0,#191919 0%,#090909 38%,#030303 100%);padding:24px 18px 56px}
+main{max-width:680px;margin:auto}
+.hero{text-align:center;margin:0 0 38px}
+.brand-link{display:inline-block;margin:0 auto 18px;text-decoration:none}
+.brand-logo{width:180px;height:180px;object-fit:contain;display:block;margin:auto;filter:drop-shadow(0 0 30px #ffffff12)}
+.hero .eyebrow{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:#a7a7a7;margin:8px 0 12px}
+.hero h1{font-size:clamp(28px,5vw,42px);font-weight:400;letter-spacing:.07em;margin:0 0 12px;text-transform:uppercase}
+.hero p{color:#969696;margin:0;font-size:13px;letter-spacing:.045em}
+.panel{background:linear-gradient(145deg,#151515,#0c0c0c);border:1px solid #313131;border-radius:20px;padding:29px;box-shadow:0 24px 90px #0009}
+.drop{border:1px dashed #727272;border-radius:12px;background:#181818;padding:36px 15px;text-align:center;cursor:pointer;display:block;transition:background .2s,border-color .2s}
+.drop:hover,.drop.drag{border-color:#fff;background:#242424}
+.drop strong{display:block;font-size:17px;font-weight:500;margin-bottom:9px}
+.drop span{display:block;color:#9f9f9f;font-size:12px}
+.drop .fileicon{display:block;font-size:31px;margin-bottom:13px;font-weight:200;color:#eee}
+input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
+.head{font-size:10px;font-weight:600;letter-spacing:.22em;color:#9f9f9f;text-transform:uppercase;margin:27px 0 12px}
+.format-choice{display:block;background:#111;border:1px solid #333;border-radius:10px;padding:16px}
+.format-choice span{display:block;color:#a8a8a8;font-size:12px;margin-bottom:9px}
+.format-choice select{width:100%;min-height:47px;background:#1c1c1c;color:#fff;border:1px solid #454545;border-radius:7px;padding:10px;font-size:14px;outline-offset:3px}
+.settings{background:#101010;border:1px solid #333;border-radius:10px;overflow:hidden}
+.setting{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px;border-bottom:1px solid #292929;font-size:13px;color:#b1b1b1}
+.setting:last-child{border:0}
+.setting b{color:#f4f4f4;font-weight:500;text-align:right}
+.btn{display:block;width:100%;margin-top:23px;background:#f4f4f4;color:#080808;border:1px solid #f4f4f4;border-radius:9px;padding:17px 13px;font-weight:700;font-size:13px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:background .2s,transform .2s}
+.btn:hover:not(:disabled){background:#cdcdcd;transform:translateY(-1px)}
+.btn:disabled{background:#333;color:#888;border-color:#333;cursor:not-allowed}
+.btn.secondary{background:transparent;color:white;border:1px solid #888;margin-top:16px}
+.btn.secondary:hover{background:#252525}
+.muted{font-size:11px;text-align:center;color:#828282;line-height:1.7;margin-top:20px}
+.result{margin-top:22px;padding:19px;background:#171717;border:1px solid #616161;border-radius:12px;overflow-wrap:anywhere;display:none}
+.result.show{display:block}
+.result strong{font-size:14px;font-weight:500}
+.result .meta{font-size:12px;color:#aaa;margin-top:8px}
+.preview-label{font-size:11px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:#c9c9c9;margin:19px 0 11px}
+.result audio{display:block;width:100%;height:48px;max-width:100%;border-radius:12px;filter:grayscale(1)}
+.error{margin-top:15px;border-radius:8px;padding:13px;background:#332020;color:#ffb8b8;display:none;font-size:13px}
+.error.show{display:block}
+.progress{display:none;margin-top:16px;color:#b9b9b9;text-align:center;font-size:13px}
+.progress.show{display:block}
+footer{text-align:center;color:#777;font-size:11px;line-height:1.85;margin-top:29px}
+footer a{color:#ccc;text-decoration:none}
+footer a:hover{text-decoration:underline}
+@media(max-width:520px){body{padding:18px 12px 36px}.brand-logo{width:145px;height:145px}.hero{margin-bottom:27px}.hero h1{letter-spacing:.035em}.panel{padding:18px}.drop{padding:29px 13px}.setting{font-size:12px}}
 </style>
 </head>
-<body><main><header class="hero"><div class="logo" aria-hidden="true">♫</div><h1>yraziel IVR Converter</h1><p>WAV / MP3 → telephone &amp; IVR audio formats</p></header>
+<body><main><header class="hero"><a class="brand-link" href="https://www.yraziel.com/" aria-label="Yishay Raziel home"><img class="brand-logo" src="/logo.png" alt="Yishay Raziel — Music &amp; Sound"></a><div class="eyebrow">YISHAY RAZIEL · MUSIC &amp; SOUND</div><h1>yraziel IVR Converter</h1><p>Professional telephony &amp; IVR audio conversion</p></header>
 <section class="panel"><label for="source" class="drop" id="drop"><span class="fileicon" aria-hidden="true">♫</span><strong id="fileName">Choose an audio file</strong><span id="fileHint">Tap to select WAV or MP3 · or drop a file here</span></label><input id="source" type="file" accept=".wav,.wave,.mp3,audio/wav,audio/x-wav,audio/mpeg,audio/mp3">
 <div class="head">OUTPUT FORMAT</div>
 <label class="format-choice" for="outputFormat"><span>Choose a destination format</span>
@@ -29,7 +74,7 @@
 </div>
 <div class="setting" style="margin-top:10px;border:1px solid #35445b;border-radius:12px"><span>High-quality anti-alias resampling</span><b id="resampleNote">44.1/48 kHz → 8 kHz · band-limited</b></div><button class="btn" id="convert" disabled>Convert audio</button><div class="progress" id="progress" role="status">Converting locally in your browser…</div><div class="error" id="error" role="alert"></div>
 <div class="result" id="result"><strong>✓ Your converted file is ready</strong><div id="resultMeta" class="meta"></div><div class="preview-label">Preview converted audio</div><audio id="preview" controls preload="metadata" aria-label="Listen to converted audio"></audio><button class="btn secondary" id="download">↓ Save / Download audio</button></div>
-<div class="muted">Your audio never leaves this device. No account, upload, or server required. The original A-law VOX profile is preserved.</div></section><footer>Telephony output is system-specific: confirm your IVR requires raw VOX or WAV with the correct codec.<br>Dialogic ADPCM, GSM 06.10 and G.722 are not yet available.</footer></main>
+<div class="muted">Your audio never leaves this device. No account, upload, or server required. The original A-law VOX profile is preserved.</div></section><footer>Telephony output is system-specific: confirm your IVR requires raw VOX or WAV with the correct codec.<br>Dialogic ADPCM, GSM 06.10 and G.722 are not yet available.<br><a href="https://www.yraziel.com/">← Back to Yishay Raziel</a></footer></main>
 <script>
 'use strict';
 const el=id=>document.getElementById(id);const fileInput=el('source'),button=el('convert'),drop=el('drop');let chosen=null,downloadUrl=null,previewUrl=null,downloadName='';
