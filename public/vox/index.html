@@ -3,17 +3,33 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#111a31"><meta name="description" content="Convert WAV or MP3 into raw G.711 A-law VOX, 8000 Hz mono. Private, browser-based conversion.">
-<title>VOX Converter — WAV / MP3 to VOX</title>
+<title>yraziel IVR Converter — WAV / MP3 to telephony formats</title>
 <style>
-:root{color-scheme:dark;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#263d68 0%,#111a31 46%,#0b1223 100%);min-height:100vh;color:#edf3ff;padding:40px 18px}main{max-width:590px;margin:0 auto}.hero{text-align:center;margin:18px 0 32px}.logo{display:inline-grid;place-items:center;width:74px;height:74px;border-radius:20px;background:linear-gradient(135deg,#6a9fff,#485ee5);box-shadow:0 14px 36px #3057dc55;font-size:34px}.hero h1{font-size:34px;letter-spacing:-1px;margin:15px 0 5px}.hero p{color:#adbedb;margin:0;font-size:15px}.panel{background:#18243a;border:1px solid #34435c;border-radius:22px;padding:25px;box-shadow:0 20px 60px #0003}.drop{border:2px dashed #647da5;border-radius:17px;background:#1f304b;padding:36px 18px;text-align:center;cursor:pointer;transition:.15s;display:block}.drop.drag{border-color:#9ac6ff;background:#2e4367}.drop strong{display:block;font-size:18px;margin-bottom:6px}.drop span{color:#bdcce4;font-size:13px}.drop .fileicon{display:block;font-size:34px;margin-bottom:10px}input[type=file]{position:absolute;opacity:0;width:1px;height:1px}.head{margin:24px 0 12px;font-size:14px;font-weight:700;color:#d3def0}.settings{background:#101c2f;border:1px solid #35445b;border-radius:14px;overflow:hidden}.setting{display:flex;justify-content:space-between;align-items:center;padding:15px 17px;border-bottom:1px solid #293851;gap:12px;font-size:14px}.setting:last-child{border:0}.setting b{color:#a9d2ff;font-weight:600;text-align:right}.btn{width:100%;margin-top:24px;border:0;background:#5c91f7;color:#fff;font-weight:750;font-size:16px;border-radius:13px;padding:16px;cursor:pointer}.btn:disabled{background:#466287;color:#ced7e7;cursor:not-allowed}.btn.secondary{background:#253955;border:1px solid #58749b;margin-top:12px}.muted{font-size:12px;text-align:center;color:#a8bad1;line-height:1.6;margin-top:17px}.result{margin-top:17px;padding:14px;background:#173d34;border:1px solid #3d8c73;border-radius:12px;overflow-wrap:anywhere;display:none}.result.show{display:block}.preview-label{font-size:13px;font-weight:700;color:#dcf4e8;margin:17px 0 9px}.result audio{display:block;width:100%;height:44px;max-width:100%;border-radius:12px}.result .meta{font-size:13px;color:#b7e6d6;margin-top:5px}.error{margin-top:15px;border-radius:12px;padding:13px;background:#49242d;color:#ffd2d9;display:none;font-size:14px}.error.show{display:block}.progress{display:none;margin-top:16px;color:#b9cbed;text-align:center;font-size:14px}.progress.show{display:block}footer{text-align:center;color:#8a9dbb;font-size:12px;line-height:1.7;margin-top:24px}a{color:#b4d0ff}@media(max-width:500px){body{padding:22px 12px}.panel{padding:17px}.hero h1{font-size:29px}}
+:root{color-scheme:dark;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#263d68 0%,#111a31 46%,#0b1223 100%);min-height:100vh;color:#edf3ff;padding:40px 18px}main{max-width:590px;margin:0 auto}.hero{text-align:center;margin:18px 0 32px}.logo{display:inline-grid;place-items:center;width:74px;height:74px;border-radius:20px;background:linear-gradient(135deg,#6a9fff,#485ee5);box-shadow:0 14px 36px #3057dc55;font-size:34px}.hero h1{font-size:34px;letter-spacing:-1px;margin:15px 0 5px}.hero p{color:#adbedb;margin:0;font-size:15px}.panel{background:#18243a;border:1px solid #34435c;border-radius:22px;padding:25px;box-shadow:0 20px 60px #0003}.drop{border:2px dashed #647da5;border-radius:17px;background:#1f304b;padding:36px 18px;text-align:center;cursor:pointer;transition:.15s;display:block}.drop.drag{border-color:#9ac6ff;background:#2e4367}.drop strong{display:block;font-size:18px;margin-bottom:6px}.drop span{color:#bdcce4;font-size:13px}.drop .fileicon{display:block;font-size:34px;margin-bottom:10px}input[type=file]{position:absolute;opacity:0;width:1px;height:1px}.head{margin:24px 0 12px;font-size:14px;font-weight:700;color:#d3def0}.settings{background:#101c2f;border:1px solid #35445b;border-radius:14px;overflow:hidden}.setting{display:flex;justify-content:space-between;align-items:center;padding:15px 17px;border-bottom:1px solid #293851;gap:12px;font-size:14px}.setting:last-child{border:0}.setting b{color:#a9d2ff;font-weight:600;text-align:right}.btn{width:100%;margin-top:24px;border:0;background:#5c91f7;color:#fff;font-weight:750;font-size:16px;border-radius:13px;padding:16px;cursor:pointer}.btn:disabled{background:#466287;color:#ced7e7;cursor:not-allowed}.btn.secondary{background:#253955;border:1px solid #58749b;margin-top:12px}.muted{font-size:12px;text-align:center;color:#a8bad1;line-height:1.6;margin-top:17px}.result{margin-top:17px;padding:14px;background:#173d34;border:1px solid #3d8c73;border-radius:12px;overflow-wrap:anywhere;display:none}.result.show{display:block}.preview-label{font-size:13px;font-weight:700;color:#dcf4e8;margin:17px 0 9px}.result audio{display:block;width:100%;height:44px;max-width:100%;border-radius:12px}.format-choice{display:block;background:#101c2f;border:1px solid #35445b;border-radius:14px;padding:14px 16px}.format-choice span{display:block;color:#b9cbed;font-size:13px;margin-bottom:9px}.format-choice select{display:block;width:100%;min-height:45px;background:#243650;color:#f2f6ff;border:1px solid #60789b;border-radius:10px;padding:10px;font-size:15px}.result .meta{font-size:13px;color:#b7e6d6;margin-top:5px}.error{margin-top:15px;border-radius:12px;padding:13px;background:#49242d;color:#ffd2d9;display:none;font-size:14px}.error.show{display:block}.progress{display:none;margin-top:16px;color:#b9cbed;text-align:center;font-size:14px}.progress.show{display:block}footer{text-align:center;color:#8a9dbb;font-size:12px;line-height:1.7;margin-top:24px}a{color:#b4d0ff}@media(max-width:500px){body{padding:22px 12px}.panel{padding:17px}.hero h1{font-size:29px}}
 </style>
 </head>
-<body><main><header class="hero"><div class="logo" aria-hidden="true">♫</div><h1>VOX Converter</h1><p>WAV / MP3 → raw G.711 A-law VOX</p></header>
+<body><main><header class="hero"><div class="logo" aria-hidden="true">♫</div><h1>yraziel IVR Converter</h1><p>WAV / MP3 → telephone &amp; IVR audio formats</p></header>
 <section class="panel"><label for="source" class="drop" id="drop"><span class="fileicon" aria-hidden="true">♫</span><strong id="fileName">Choose an audio file</strong><span id="fileHint">Tap to select WAV or MP3 · or drop a file here</span></label><input id="source" type="file" accept=".wav,.wave,.mp3,audio/wav,audio/x-wav,audio/mpeg,audio/mp3">
-<div class="head">OUTPUT SETTINGS</div><div class="settings"><div class="setting"><span>Format</span><b>G.711 A-law (.vox)</b></div><div class="setting"><span>Sample rate</span><b>8000 Hz</b></div><div class="setting"><span>Channels</span><b>Mono</b></div><div class="setting"><span>Container</span><b>Raw / no header</b></div></div>
-<div class="setting" style="margin-top:10px;border:1px solid #35445b;border-radius:12px"><span>High-quality anti-alias resampling</span><b>44.1/48 kHz → 8 kHz · band-limited</b></div><button class="btn" id="convert" disabled>Convert to VOX</button><div class="progress" id="progress" role="status">Converting locally in your browser…</div><div class="error" id="error" role="alert"></div>
-<div class="result" id="result"><strong>✓ Your VOX file is ready</strong><div id="resultMeta" class="meta"></div><div class="preview-label">Preview converted VOX</div><audio id="preview" controls preload="metadata" aria-label="Listen to converted VOX"></audio><button class="btn secondary" id="download">↓ Save / Download VOX</button></div>
-<div class="muted">Your audio never leaves this device. No account, upload, or server required.</div></section><footer>Designed for telephone / IVR audio requiring 8 kHz mono, headerless G.711 A-law.<br>Note: some other systems use the name “VOX” for a different codec.</footer></main>
+<div class="head">OUTPUT FORMAT</div>
+<label class="format-choice" for="outputFormat"><span>Choose a destination format</span>
+<select id="outputFormat">
+<option value="alaw-vox">VOX — G.711 A-law, 8 kHz (original)</option>
+<option value="ulaw-vox">RAW — G.711 μ-law, 8 kHz</option>
+<option value="pcm8-wav">WAV — PCM 16-bit, 8 kHz</option>
+<option value="alaw-wav">WAV — G.711 A-law, 8 kHz</option>
+<option value="ulaw-wav">WAV — G.711 μ-law, 8 kHz</option>
+<option value="pcm16-wav">WAV — PCM 16-bit, 16 kHz</option>
+<option value="pcm48-wav">WAV — PCM 16-bit, 48 kHz</option>
+</select></label>
+<div class="head">OUTPUT SETTINGS</div><div class="settings">
+<div class="setting"><span>Format</span><b id="fmtCodec">G.711 A-law (.vox)</b></div>
+<div class="setting"><span>Sample rate</span><b id="fmtRate">8000 Hz</b></div>
+<div class="setting"><span>Channels</span><b>Mono</b></div>
+<div class="setting"><span>Container</span><b id="fmtContainer">Raw / no header</b></div>
+</div>
+<div class="setting" style="margin-top:10px;border:1px solid #35445b;border-radius:12px"><span>High-quality anti-alias resampling</span><b id="resampleNote">44.1/48 kHz → 8 kHz · band-limited</b></div><button class="btn" id="convert" disabled>Convert audio</button><div class="progress" id="progress" role="status">Converting locally in your browser…</div><div class="error" id="error" role="alert"></div>
+<div class="result" id="result"><strong>✓ Your converted file is ready</strong><div id="resultMeta" class="meta"></div><div class="preview-label">Preview converted audio</div><audio id="preview" controls preload="metadata" aria-label="Listen to converted audio"></audio><button class="btn secondary" id="download">↓ Save / Download audio</button></div>
+<div class="muted">Your audio never leaves this device. No account, upload, or server required. The original A-law VOX profile is preserved.</div></section><footer>Telephony output is system-specific: confirm your IVR requires raw VOX or WAV with the correct codec.<br>Dialogic ADPCM, GSM 06.10 and G.722 are not yet available.</footer></main>
 <script>
 'use strict';
 const el=id=>document.getElementById(id);const fileInput=el('source'),button=el('convert'),drop=el('drop');let chosen=null,downloadUrl=null,previewUrl=null,downloadName='';
@@ -26,8 +42,8 @@ function alawEncode(sample){let pcm=sample>>3;let mask;if(pcm>=0){mask=0xD5}else
 async function decodeAudio(file){const ctx=new (window.AudioContext||window.webkitAudioContext)();try{const array=await file.arrayBuffer();return await ctx.decodeAudioData(array)}finally{await ctx.close()}}
 // Band-limited sinc resampling: filter at the ORIGINAL sampling rate, before decimation.
 // This avoids the high-frequency aliasing of browser-dependent OfflineAudioContext resampling.
-function resampleMono(decoded){
- const srcRate=decoded.sampleRate, dstRate=8000, n=decoded.length;
+function resampleMono(decoded,dstRate=8000){
+ const srcRate=decoded.sampleRate, n=decoded.length;
  const outLength=Math.max(1,Math.round(n*dstRate/srcRate));
  const channels=Array.from({length:decoded.numberOfChannels},(_,i)=>decoded.getChannelData(i));
  const out=new Float32Array(outLength);
@@ -69,6 +85,62 @@ function previewWav(vox){
  for(let i=0;i<vox.length;i++)v.setInt16(44+i*2,alawDecode(vox[i]),true);
  return new Blob([wav],{type:'audio/wav'});
 }
-button.addEventListener('click',async()=>{if(!chosen)return;button.disabled=true;el('error').classList.remove('show');el('result').classList.remove('show');clearPreview();el('progress').classList.add('show');try{if(!/\.(mp3|wav|wave)$/i.test(chosen.name))throw Error('Please choose a WAV or MP3 file.');const decoded=await decodeAudio(chosen);const pcm=resampleMono(decoded);const vox=encodeVox(pcm);if(downloadUrl)URL.revokeObjectURL(downloadUrl);downloadUrl=URL.createObjectURL(new Blob([vox],{type:'application/octet-stream'}));downloadName=chosen.name.replace(/\.[^.]+$/,'')+'.vox';previewUrl=URL.createObjectURL(previewWav(vox));el('preview').src=previewUrl;el('resultMeta').textContent=`${downloadName} · ${(vox.length/1024).toFixed(1)} KB · ${decoded.duration.toFixed(1)} seconds`;el('result').classList.add('show')}catch(err){showError('Could not convert this audio file. '+(err?.message||'Try another WAV or MP3.'))}finally{el('progress').classList.remove('show');button.disabled=!chosen}});
+
+const outputFormats={
+ 'alaw-vox':{label:'G.711 A-law',rate:8000,ext:'.vox',container:'Raw / no header',codec:'alaw',wav:false},
+ 'ulaw-vox':{label:'G.711 μ-law',rate:8000,ext:'.ulaw',container:'Raw / no header',codec:'ulaw',wav:false},
+ 'pcm8-wav':{label:'PCM 16-bit',rate:8000,ext:'.wav',container:'RIFF WAV',codec:'pcm',wav:true},
+ 'alaw-wav':{label:'G.711 A-law',rate:8000,ext:'.wav',container:'RIFF WAV',codec:'alaw',wav:true},
+ 'ulaw-wav':{label:'G.711 μ-law',rate:8000,ext:'.wav',container:'RIFF WAV',codec:'ulaw',wav:true},
+ 'pcm16-wav':{label:'PCM 16-bit',rate:16000,ext:'.wav',container:'RIFF WAV',codec:'pcm',wav:true},
+ 'pcm48-wav':{label:'PCM 16-bit',rate:48000,ext:'.wav',container:'RIFF WAV',codec:'pcm',wav:true}
+};
+function fmt(){return outputFormats[el('outputFormat').value]}
+function updateFormat(){const f=fmt();el('fmtCodec').textContent=f.label;el('fmtRate').textContent=f.rate+' Hz';el('fmtContainer').textContent=f.container;el('resampleNote').textContent='Band-limited → '+(f.rate/1000)+' kHz';el('result').classList.remove('show');clearPreview()}
+el('outputFormat').addEventListener('change',updateFormat);
+function toInt16(v){v=Math.max(-1,Math.min(1,v));return v<0?Math.round(v*32768):Math.round(v*32767)}
+function ulawEncode(sample){
+ let pcm=sample<0?-sample:sample;
+ if(pcm>32635)pcm=32635;
+ pcm+=132;
+ let exp=7;
+ for(let mask=0x4000;exp>0&&!(pcm&mask);mask>>=1)exp--;
+ const mantissa=(pcm>>(exp+3))&15;
+ return (~((sample<0?0x80:0)|(exp<<4)|mantissa))&255;
+}
+function ulawDecode(byte){
+ let u=(~byte)&255;
+ const t=(((u&15)<<3)+132)<<((u>>4)&7);
+ return (u&128)?(132-t):(t-132);
+}
+function makeWav(data,rate,codec){
+ const bytesPerSample=codec==='pcm'?2:1, dataSize=data.length*bytesPerSample;
+ const buffer=new ArrayBuffer(44+dataSize),v=new DataView(buffer);
+ const word=(i,text)=>{for(let j=0;j<text.length;j++)v.setUint8(i+j,text.charCodeAt(j))};
+ word(0,'RIFF');v.setUint32(4,36+dataSize,true);word(8,'WAVE');word(12,'fmt ');
+ v.setUint32(16,16,true);v.setUint16(20,codec==='pcm'?1:codec==='alaw'?6:7,true);
+ v.setUint16(22,1,true);v.setUint32(24,rate,true);
+ v.setUint32(28,rate*bytesPerSample,true);v.setUint16(32,bytesPerSample,true);
+ v.setUint16(34,bytesPerSample*8,true);word(36,'data');v.setUint32(40,dataSize,true);
+ for(let i=0;i<data.length;i++){
+  if(codec==='pcm')v.setInt16(44+i*2,toInt16(data[i]),true);
+  else v.setUint8(44+i,data[i]);
+ }
+ return new Blob([buffer],{type:'audio/wav'});
+}
+function previewFromCodec(data,f){
+ if(f.codec==='pcm')return makeWav(data,f.rate,'pcm');
+ if(f.codec==='alaw'&&f.rate===8000)return previewWav(data);
+ const samples=new Float32Array(data.length);
+ for(let i=0;i<data.length;i++)samples[i]=(f.codec==='ulaw'?ulawDecode(data[i]):alawDecode(data[i]))/32768;
+ return makeWav(samples,f.rate,'pcm');
+}
+function encodeForFormat(samples,f){
+ if(f.codec==='pcm')return {file:makeWav(samples,f.rate,'pcm'),preview:makeWav(samples,f.rate,'pcm'),size:samples.length*2+44};
+ const data=f.codec==='alaw'?encodeVox(samples):Uint8Array.from(samples,x=>ulawEncode(toInt16(x)));
+ const file=f.wav?makeWav(data,f.rate,f.codec):new Blob([data],{type:'application/octet-stream'});
+ return {file,preview:previewFromCodec(data,f),size:file.size};
+}
+button.addEventListener('click',async()=>{if(!chosen)return;button.disabled=true;el('error').classList.remove('show');el('result').classList.remove('show');clearPreview();el('progress').classList.add('show');try{if(!/\.(mp3|wav|wave)$/i.test(chosen.name))throw Error('Please choose a WAV or MP3 file.');const decoded=await decodeAudio(chosen);const f=fmt();const pcm=resampleMono(decoded,f.rate);const encoded=encodeForFormat(pcm,f);if(downloadUrl)URL.revokeObjectURL(downloadUrl);downloadUrl=URL.createObjectURL(encoded.file);downloadName=chosen.name.replace(/\.[^.]+$/,'')+f.ext;previewUrl=URL.createObjectURL(encoded.preview);el('preview').src=previewUrl;el('resultMeta').textContent=`${downloadName} · ${(encoded.size/1024).toFixed(1)} KB · ${decoded.duration.toFixed(1)} seconds`;el('result').classList.add('show')}catch(err){showError('Could not convert this audio file. '+(err?.message||'Try another WAV or MP3.'))}finally{el('progress').classList.remove('show');button.disabled=!chosen}});
 el('download').addEventListener('click',()=>{if(!downloadUrl)return;const a=document.createElement('a');a.href=downloadUrl;a.download=downloadName;document.body.append(a);a.click();a.remove()});
 </script></body></html>
