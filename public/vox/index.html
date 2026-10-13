@@ -2,8 +2,8 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#050505"><meta name="description" content="Convert WAV or MP3 into raw G.711 A-law VOX, 8000 Hz mono. Private, browser-based conversion.">
-<title>yraziel IVR Converter — WAV / MP3 to telephony formats</title>
+<meta name="theme-color" content="#050505"><meta name="description" content="Convert WAV, MP3 or M4A into telephony formats, 8000 Hz mono. Private, browser-based conversion.">
+<title>yraziel IVR Converter — WAV / MP3 / M4A to telephony formats</title>
 <style>
 :root{color-scheme:dark;font-family:Inter,Arial,Helvetica,sans-serif}
 *{box-sizing:border-box}
@@ -64,7 +64,7 @@ footer a:hover{text-decoration:underline}
 </style>
 </head>
 <body><main><header class="hero"><a class="brand-link" href="https://www.yraziel.com/" aria-label="Yishay Raziel home"><img class="brand-logo" src="/logo.png" alt="Yishay Raziel — Music &amp; Sound"></a><div class="eyebrow">YISHAY RAZIEL · MUSIC &amp; SOUND</div><h1>yraziel IVR Converter</h1><p>Professional telephony &amp; IVR audio conversion</p></header>
-<section class="panel"><label for="source" class="drop" id="drop"><span class="fileicon" aria-hidden="true">♫</span><strong id="fileName">Choose audio files</strong><span id="fileHint">Select or drop multiple WAV / MP3 files</span></label><input id="source" type="file" multiple accept=".wav,.wave,.mp3,audio/wav,audio/x-wav,audio/mpeg,audio/mp3">
+<section class="panel"><label for="source" class="drop" id="drop"><span class="fileicon" aria-hidden="true">♫</span><strong id="fileName">Choose audio files</strong><span id="fileHint">Select or drop multiple WAV / MP3 / M4A files</span></label><input id="source" type="file" multiple accept=".wav,.wave,.mp3,.m4a,audio/wav,audio/x-wav,audio/mpeg,audio/mp3,audio/mp4,audio/x-m4a">
 <div class="batch-list" id="batchList" aria-live="polite"></div><div class="head">OUTPUT FORMAT</div>
 <label class="format-choice" for="outputFormat"><span>Choose a destination format</span>
 <select id="outputFormat">
@@ -94,7 +94,7 @@ function showError(msg){el('error').textContent=msg;el('error').classList.add('s
 function clearPreview(){const audio=el('preview');audio.pause();audio.removeAttribute('src');audio.load();if(previewUrl){URL.revokeObjectURL(previewUrl);previewUrl=null}}
 function cleanupResults(){clearPreview();if(downloadUrl){URL.revokeObjectURL(downloadUrl);downloadUrl=null}for(const item of completed){if(item.url)URL.revokeObjectURL(item.url)}completed=[];el('result').classList.remove('show');el('completedList').replaceChildren()}
 function renderInputList(statuses=[]){const list=el('batchList');list.replaceChildren();chosenFiles.forEach((file,i)=>{const row=document.createElement('div');row.className='batch-entry';const name=document.createElement('span');name.className='fname';name.textContent=file.name;const state=document.createElement('span');state.className='state';state.textContent=statuses[i]||((file.size/1048576).toFixed(2)+' MB');row.append(name,state);list.append(row)})}
-function selectFiles(files){if(isConverting)return;cleanupResults();el('error').classList.remove('show');chosenFiles=Array.from(files||[]).filter(f=>/\.(mp3|wav|wave)$/i.test(f.name));button.disabled=!chosenFiles.length;el('fileName').textContent=chosenFiles.length===1?chosenFiles[0].name:chosenFiles.length?chosenFiles.length+' audio files selected':'Choose audio files';el('fileHint').textContent='WAV / MP3 · drag and drop or tap to replace';renderInputList()}
+function selectFiles(files){if(isConverting)return;cleanupResults();el('error').classList.remove('show');chosenFiles=Array.from(files||[]).filter(f=>/\.(mp3|wav|wave|m4a)$/i.test(f.name));button.disabled=!chosenFiles.length;el('fileName').textContent=chosenFiles.length===1?chosenFiles[0].name:chosenFiles.length?chosenFiles.length+' audio files selected':'Choose audio files';el('fileHint').textContent='WAV / MP3 / M4A · drag and drop or tap to replace';renderInputList()}
 fileInput.addEventListener('change',()=>selectFiles(fileInput.files));
 ['dragenter','dragover'].forEach(type=>drop.addEventListener(type,e=>{e.preventDefault();drop.classList.add('drag')}));
 ['dragleave','drop'].forEach(type=>drop.addEventListener(type,e=>{e.preventDefault();drop.classList.remove('drag')}));
