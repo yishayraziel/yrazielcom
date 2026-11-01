@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>WADAHEX: free analog hex-pad drum synth (VST3, Mac + Windows)</title>
+<meta name="description" content="WADAHEX by Yishay Raziel. Analog hex-pad drums, straight out of 1981. A free VST3 drum synth for Mac and Windows: 10 pads, 64 vintage sounds, gated reverb on every pad.">
+<meta name="theme-color" content="#030604">
+<link rel="canonical" href="https://yraziel.com/wadahex/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://yraziel.com/wadahex/">
+<meta property="og:title" content="WADAHEX: analog hex-pad drums, straight out of 1981">
+<meta property="og:description" content="Free VST3 drum synth for Mac + Windows. 10 pads, 64 vintage sounds, gated reverb on every pad.">
+<meta property="og:image" content="https://yraziel.com/wadahex/og.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="vt323.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="barlow700.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:VT323;src:url(vt323.woff2) format("woff2");font-display:swap}
+@font-face{font-family:Barlow;font-weight:700;src:url(barlow700.woff2) format("woff2");font-display:swap}
+:root{
+  --bg:#030604; --bg2:#07100a; --g:#78ff96; --g-dim:#3f8f52; --g-dark:#143a20;
+  --amber:#ffb628; --red:#ff3e28; --orange:#ff7a14; --cream:#ece2cd; --cyan:#5ae6fa;
+  --glow:0 0 6px rgba(120,255,150,.55),0 0 18px rgba(120,255,150,.18);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;min-height:100vh;color:var(--g);font:22px/1.25 VT323,ui-monospace,Menlo,Consolas,monospace;
+  background:radial-gradient(ellipse at 50% -10%,#0d2414 0%,var(--bg2) 35%,var(--bg) 75%);
+  text-shadow:var(--glow);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+/* CRT scanlines + vignette */
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;
+  background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.22) 2px 4px),
+             radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(0,0,0,.55) 100%)}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 8px}
+header .home img{height:34px;width:auto;display:block;filter:drop-shadow(0 0 8px rgba(236,226,205,.25))}
+header .path{color:var(--g-dim);font-size:20px;white-space:nowrap}
+
+/* boot + hero */
+.boot{margin:28px 0 6px;color:var(--g-dim);font-size:20px;min-height:4.6em;white-space:pre-wrap}
+.boot b{color:var(--g);font-weight:400}
+.cursor{display:inline-block;width:.55em;height:.12em;background:currentColor;vertical-align:-.05em;animation:blink 1s steps(1) infinite;box-shadow:var(--glow)}
+@keyframes blink{50%{opacity:0}}
+.logo{display:flex;align-items:center;gap:clamp(12px,3vw,26px);margin:8px 0 0}
+.hex{width:clamp(64px,13vw,118px);flex:none;filter:drop-shadow(0 0 10px rgba(255,62,40,.6))}
+h1{font:700 clamp(68px,17vw,176px)/.86 Barlow,Impact,sans-serif;margin:0;color:#fff;letter-spacing:.01em;
+  text-shadow:0 0 18px rgba(255,255,255,.25)}
+.by{font-size:clamp(20px,3vw,26px);color:var(--cyan);text-shadow:0 0 8px rgba(90,230,250,.5);margin:4px 0 0 2px}
+.stripes{height:24px;margin:18px 0 22px;background:linear-gradient(to bottom,var(--red) 0 30%,transparent 30% 37%,var(--orange) 37% 64%,transparent 64% 71%,var(--amber) 71% 100%);box-shadow:0 0 22px rgba(255,90,30,.35)}
+.tag{font-size:clamp(30px,5.4vw,48px);line-height:1.05;color:#eaffee;margin:0}
+.tag .yr{background:var(--amber);color:#000;text-shadow:none;padding:0 .18em;box-shadow:0 0 18px rgba(255,182,40,.55)}
+.sub{font-size:clamp(22px,3.2vw,28px);color:var(--g);margin:12px 0 0}
+
+/* DOS dialog */
+.dlg{position:relative;margin:34px 0;padding:26px 22px 22px;background:rgba(0,0,0,.72);
+  outline:3px solid var(--g);outline-offset:-9px;box-shadow:inset 0 0 0 15px rgba(0,0,0,.72),inset 0 0 0 18px var(--g),0 0 30px rgba(120,255,150,.12)}
+.dlg>.title{position:absolute;top:-2px;left:50%;transform:translate(-50%,-50%);background:var(--bg);padding:0 12px;color:#eaffee;white-space:nowrap}
+.dlg .inner{padding:16px 14px 6px}
+.dl{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn{display:block;text-decoration:none;border:3px solid var(--g);padding:16px 14px 14px;text-align:center;font-size:clamp(26px,4.4vw,34px);line-height:1;
+  color:var(--g);background:transparent;transition:background .12s,color .12s,box-shadow .12s;text-shadow:var(--glow)}
+.btn small{display:block;font-size:19px;margin-top:8px;color:var(--g-dim);text-shadow:none}
+.btn:hover,.btn:focus-visible,.btn.primary{background:var(--g);color:#021006;text-shadow:none;box-shadow:0 0 26px rgba(120,255,150,.45);outline:none}
+.btn.primary small,.btn:hover small,.btn:focus-visible small{color:#0d3a18}
+.btn .k{opacity:.85}
+.meta{display:flex;flex-wrap:wrap;gap:6px 22px;justify-content:center;margin-top:16px;font-size:20px;color:var(--g-dim)}
+.meta a{color:var(--g)}
+.free{color:var(--amber);text-shadow:0 0 8px rgba(255,182,40,.5)}
+
+/* product */
+.crt{margin:8px -4px 0;border-radius:18px;overflow:hidden;position:relative;box-shadow:0 0 0 2px #0f2a17,0 30px 80px rgba(0,0,0,.7),0 0 60px rgba(255,62,40,.08)}
+.crt img{display:block;width:100%;height:auto}
+.crt::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.07) 45%,transparent 55%);background-size:300% 100%;animation:sweep 6s ease-in-out infinite}
+@keyframes sweep{0%,60%{background-position:120% 0}100%{background-position:-60% 0}}
+
+section h2{font:400 clamp(30px,4.6vw,40px)/1 VT323,monospace;color:#eaffee;margin:56px 0 18px}
+section h2::before{content:"C:\\WADAHEX> ";color:var(--g-dim)}
+.two{display:grid;grid-template-columns:minmax(0,360px) 1fr;gap:34px;align-items:start}
+.reel{position:relative;border:3px solid var(--g-dark);background:#000;aspect-ratio:9/16;box-shadow:0 0 40px rgba(120,255,150,.08)}
+.reel video{display:block;width:100%;height:100%;object-fit:cover}
+.unmute{position:absolute;right:10px;bottom:10px;font:22px VT323,monospace;background:rgba(0,0,0,.75);color:var(--g);border:2px solid var(--g);padding:4px 10px;cursor:pointer;text-shadow:var(--glow)}
+
+.dir{list-style:none;margin:0;padding:0;font-size:22px}
+.dir li{display:grid;grid-template-columns:8.5em 1fr;gap:10px;padding:6px 8px;border-bottom:1px dashed var(--g-dark)}
+.dir li:hover{background:var(--g);color:#021006;text-shadow:none}
+.dir li:hover .d{color:#0d3a18}
+.dir .n{color:#eaffee}
+.dir li:hover .n{color:#021006}
+.dir .d{color:var(--g)}
+.dir .sum{border:0;color:var(--g-dim);padding-top:12px}
+
+.gallery{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.gallery img{width:100%;height:auto;display:block;border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.6)}
+
+.notes{display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:21px}
+.notes>div{border:2px solid var(--g-dark);padding:16px 18px;background:rgba(0,0,0,.4)}
+.notes h3{font:400 26px VT323,monospace;margin:0 0 8px;color:var(--amber);text-shadow:0 0 8px rgba(255,182,40,.4)}
+.notes p{margin:0 0 8px;color:var(--g)}
+.notes code{color:#eaffee;font:inherit}
+.phone{display:none;margin:14px 0 0;text-align:center;font-size:20px;color:var(--amber);text-shadow:0 0 8px rgba(255,182,40,.4)}
+.phone button{font:22px VT323,monospace;margin-top:8px;background:transparent;color:var(--amber);border:2px solid var(--amber);padding:6px 14px;cursor:pointer}
+.is-phone .phone{display:block}
+
+footer{margin:70px 0 0;padding:28px 0 44px;border-top:2px solid var(--g-dark);display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;color:var(--g-dim);font-size:20px}
+footer img{height:40px;width:auto;display:block}
+footer a{color:var(--g)}
+
+@media (max-width:760px){
+  body{font-size:20px}
+  .dl{grid-template-columns:1fr}
+  .two{grid-template-columns:1fr}
+  .reel{max-width:360px;margin:0 auto;width:100%}
+  .gallery,.notes{grid-template-columns:1fr}
+  .dlg{padding:24px 14px 18px}
+  .dlg .inner{padding:14px 8px 4px}
+  header .path{display:none}
+  .dir li{grid-template-columns:1fr;gap:2px;padding:10px 8px}
+}
+@media (prefers-reduced-motion:reduce){.cursor,.crt::after{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="home" href="/" aria-label="Yishay Raziel, home"><img src="logo_lockup.png" alt="Yishay Raziel, Music &amp; Sound" width="873" height="176"></a>
+    <span class="path">A:\WADAHEX.EXE</span>
+  </header>
+
+  <div class="boot" id="boot" aria-hidden="true"></div>
+
+  <div class="logo">
+    <svg class="hex" viewBox="0 0 100 100" aria-hidden="true"><g fill="none" stroke="#ff3e28" stroke-linejoin="round"><polygon stroke-width="9" points="50,6 88,28 88,72 50,94 12,72 12,28"/><polygon stroke-width="6" points="50,29 69,40 69,61 50,72 31,61 31,40"/></g></svg>
+    <div>
+      <h1>WADAHEX</h1>
+      <div class="by">by Yishay Raziel</div>
+    </div>
+  </div>
+  <div class="stripes" aria-hidden="true"></div>
+  <p class="tag">Analog hex-pad drums,<br>straight out of <span class="yr">1981</span></p>
+  <p class="sub">A <span class="free">free</span> VST3 drum synth for Mac + Windows.</p>
+
+  <div class="dlg" id="download">
+    <span class="title">[ DOWNLOAD ]</span>
+    <div class="inner">
+      <div class="dl">
+        <a class="btn" id="btn-mac" href="https://github.com/yishayraziel/wadahex/releases/latest/download/WADAHEX_mac.dmg">
+          <span class="k">&gt;</span> MAC
+          <small>Apple Silicon + Intel · <span data-size="WADAHEX_mac.dmg">19 MB</span></small>
+        </a>
+        <a class="btn" id="btn-win" href="https://github.com/yishayraziel/wadahex/releases/latest/download/WADAHEX_win_setup.exe">
+          <span class="k">&gt;</span> WINDOWS
+          <small>64-bit installer · <span data-size="WADAHEX_win_setup.exe">12 MB</span></small>
+        </a>
+      </div>
+      <div class="phone">ON A PHONE? WADAHEX RUNS ON YOUR COMPUTER.<br><button type="button" id="share">SEND THIS LINK TO MY COMPUTER</button></div>
+      <div class="meta">
+        <span>VERSION <span id="ver">1.3.1</span></span>
+        <a href="WADAHEX_Manual.pdf">MANUAL.PDF</a>
+        <span>VST3 ONLY: <a href="https://github.com/yishayraziel/wadahex/releases/latest/download/WADAHEX_mac_VST3.zip">MAC.ZIP</a> · <a href="https://github.com/yishayraziel/wadahex/releases/latest/download/WADAHEX_win_VST3.zip">WIN.ZIP</a></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="crt"><img src="wadahex_front.webp" width="1600" height="900" alt="The WADAHEX plugin: ten hexagonal drum pads on the left, tone, noise, chip, filter, LFO and output sections on the right"></div>
+
+  <section>
+    <h2>TYPE README.TXT</h2>
+    <div class="two">
+      <div class="reel">
+        <video id="reel" src="wadahex_reel.mp4" poster="reel_poster.jpg" playsinline muted loop autoplay preload="metadata"></video>
+        <button class="unmute" id="unmute" type="button">&#9835; SOUND ON</button>
+      </div>
+      <ul class="dir">
+        <li><span class="n">10 PADS</span><span class="d">Kick, snare, four toms, clap, perc and two hi-hats with choke. Hit the centre for hard, the edge for soft.</span></li>
+        <li><span class="n">64 SOUNDS</span><span class="d">Vintage drum-brain sounds, each one matched to the original by analysis. All pure synthesis, no samples.</span></li>
+        <li><span class="n">THE BEND</span><span class="d">Analog and fast pitch curves. Bend every tom as far as you dare. Pew.</span></li>
+        <li><span class="n">GATED VERB</span><span class="d">An 80s reverb on every pad. VERB, GATE and V.TONE, from dark to bright.</span></li>
+        <li><span class="n">KEYS</span><span class="d">Play any pad chromatically from your keyboard, like a synth.</span></li>
+        <li><span class="n">CHIP</span><span class="d">An 8-bit layer under the analog voice, from crunchy to clean.</span></li>
+        <li><span class="n">DRIFT</span><span class="d">Every hit is a little different, like the real circuits.</span></li>
+        <li><span class="n">11 OUTS</span><span class="d">Send any pad to its own output. Mute and solo on every pad.</span></li>
+        <li><span class="n">KITS</span><span class="d">14 factory kits. Save your own, and export one-shots to WAV.</span></li>
+        <li class="sum">9 FILE(S) &nbsp; 0 BYTES OF SAMPLES</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>DIR /PICS</h2>
+    <div class="gallery">
+      <img src="wadahex_angle.webp" width="1400" height="788" loading="lazy" alt="WADAHEX seen from an angle on a dark desk">
+      <img src="wadahex_wood.webp" width="1400" height="788" loading="lazy" alt="WADAHEX on a wooden desk">
+    </div>
+  </section>
+
+  <section>
+    <h2>INSTALL.BAT</h2>
+    <div class="notes">
+      <div>
+        <h3>MAC</h3>
+        <p>Open the DMG and run <code>WADAHEX Installer.pkg</code>. It's signed and notarized by Apple.</p>
+        <p>VST3 goes to <code>/Library/Audio/Plug-Ins/VST3</code>. Rescan plugins in your DAW.</p>
+      </div>
+      <div>
+        <h3>WINDOWS</h3>
+        <p>Run <code>WADAHEX_win_setup.exe</code>. If SmartScreen warns you, click <code>More info &gt; Run anyway</code>.</p>
+        <p>VST3 goes to <code>C:\Program Files\Common Files\VST3</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="dlg" style="margin-top:56px">
+    <span class="title">[ READY ]</span>
+    <div class="inner" style="text-align:center">
+      <p class="tag" style="font-size:clamp(26px,4.4vw,38px);margin:0 0 16px">Free. Mac + Windows. VST3.</p>
+      <a class="btn primary" href="#download" style="max-width:440px;margin:0 auto">&gt; DOWNLOAD WADAHEX</a>
+    </div>
+  </div>
+
+  <footer>
+    <a href="/" aria-label="Yishay Raziel, home"><img src="logo_lockup.png" alt="Yishay Raziel, Music &amp; Sound" width="873" height="176" loading="lazy"></a>
+    <span>(C) 1981-<span id="yr">2026</span> YISHAY RAZIEL · <a href="/contact">CONTACT</a> · <a href="https://github.com/yishayraziel/wadahex">SOURCE</a></span>
+  </footer>
+</div>
+
+<script>
+(() => {
+  // highlight the visitor's platform
+  const ua = navigator.userAgent, plat = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "";
+  const isMac = /Mac|iPhone|iPad/i.test(plat + ua), isWin = /Win/i.test(plat + ua);
+  if (isWin || isMac) document.getElementById(isWin ? "btn-win" : "btn-mac").classList.add("primary");
+  document.getElementById("yr").textContent = new Date().getFullYear();
+
+  // phones: offer to send the link onward instead of downloading
+  if (/iPhone|iPad|Android/i.test(ua)) {
+    document.body.classList.add("is-phone");
+    const sb = document.getElementById("share"), url = "https://yraziel.com/wadahex/";
+    sb.addEventListener("click", async () => {
+      try { if (navigator.share) { await navigator.share({ title: "WADAHEX", text: "WADAHEX: free drum synth (Mac + Windows)", url }); return; } } catch (e) { return; }
+      try { await navigator.clipboard.writeText(url); sb.textContent = "LINK COPIED"; } catch (e) { location.href = "mailto:?subject=WADAHEX&body=" + encodeURIComponent(url); }
+    });
+  }
+
+  // boot text
+  const boot = document.getElementById("boot");
+  const lines = ["WADAHEX BIOS v1.0  (C) 1981", "640K OK · 10 PADS DETECTED", "A:\\>"];
+  const cmd = "WADAHEX.EXE";
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const cursor = '<span class="cursor"></span>';
+  if (reduce) { boot.innerHTML = lines.join("\n") + "<b>" + cmd + "</b>" + cursor; }
+  else {
+    let out = "", i = 0;
+    const next = () => {
+      if (i < lines.length - 1) { out += lines[i++] + "\n"; boot.innerHTML = out + cursor; setTimeout(next, 160); return; }
+      out += lines[i]; let k = 0;
+      const type = () => { boot.innerHTML = out + "<b>" + cmd.slice(0, k) + "</b>" + cursor; if (k++ < cmd.length) setTimeout(type, 55 + Math.random() * 40); };
+      setTimeout(type, 250);
+    };
+    next();
+  }
+
+  // live version + sizes from the latest GitHub release
+  fetch("https://api.github.com/repos/yishayraziel/wadahex/releases/latest").then(r => r.ok ? r.json() : null).then(rel => {
+    if (!rel) return;
+    document.getElementById("ver").textContent = rel.tag_name.replace(/^v/, "");
+    for (const a of rel.assets || []) {
+      const el = document.querySelector('[data-size="' + a.name + '"]');
+      if (el) el.textContent = Math.round(a.size / 1048576) + " MB";
+    }
+  }).catch(() => {});
+
+  // reel sound toggle
+  const v = document.getElementById("reel"), b = document.getElementById("unmute");
+  b.addEventListener("click", () => {
+    v.muted = !v.muted; if (!v.muted) { v.currentTime = 0; v.play(); }
+    b.innerHTML = v.muted ? "&#9835; SOUND ON" : "&#9835; SOUND OFF";
+  });
+})();
+</script>
+</body>
+</html>
