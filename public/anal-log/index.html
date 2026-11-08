@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Anal-Log: free speaker, phone and radio simulator (VST3 / AU, Mac + Windows)</title>
+<meta name="description" content="Anal-Log by Yishay Raziel. Make any voice or mix sound like a phone call, a walkie-talkie, a megaphone, an old radio or the party next door. Free VST3 / AU plugin for Mac and Windows: 15 modules, 9 real codecs, 100+ impulse responses, 55 presets.">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="canonical" href="https://yraziel.com/anal-log/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://yraziel.com/anal-log/">
+<meta property="og:title" content="Anal-Log: free speaker, phone & radio simulator">
+<meta property="og:description" content="Phones, walkie-talkies, megaphones, old radios, the TV in the next room. Free VST3 / AU for Mac + Windows.">
+<meta property="og:image" content="https://yraziel.com/anal-log/og.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="vt323.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="barlow700.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:VT323;src:url(vt323.woff2) format("woff2");font-display:swap}
+@font-face{font-family:Barlow;font-weight:700;src:url(barlow700.woff2) format("woff2");font-display:swap}
+:root{
+  --bg:#0a0a0a; --panel:#141414; --line:#2a2a2a; --orange:#ff6a13; --orange-d:#c24a07; --cream:#e8dec8; --mute:#9a958a;
+  --g:#78ff96; --g-dim:#3f8f52; --g-dark:#10301a; --glow:0 0 6px rgba(120,255,150,.55),0 0 18px rgba(120,255,150,.18);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;color:var(--cream);font:19px/1.45 Barlow,"Arial Narrow",Arial,sans-serif;font-weight:700;
+  background:radial-gradient(ellipse at 50% -15%,#2a1406 0%,#120b07 28%,var(--bg) 62%);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 18px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0 6px}
+header .home img{height:34px;width:auto;display:block}
+header .path{font:20px VT323,monospace;color:var(--g-dim)}
+.mono{font-family:VT323,ui-monospace,Menlo,monospace;font-weight:400}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.05fr 1fr;gap:34px;align-items:center;margin:26px 0 8px}
+.eyebrow{font:22px VT323,monospace;color:var(--g);text-shadow:var(--glow);letter-spacing:.04em;margin:0 0 8px;min-height:1.3em}
+h1{font:700 clamp(72px,12vw,150px)/.84 Barlow,Impact,sans-serif;margin:0;color:#fff;letter-spacing:-.01em;text-transform:uppercase}
+.by{font:24px VT323,monospace;color:var(--mute);margin:10px 0 0 3px}
+.stripe{height:10px;width:min(320px,70%);background:var(--orange);margin:22px 0 22px;box-shadow:0 0 30px rgba(255,106,19,.35)}
+.tag{font-size:clamp(28px,3.6vw,40px);line-height:1.08;color:#fff;margin:0;text-transform:uppercase}
+.tag em{font-style:normal;color:var(--orange)}
+.sub{font-weight:400;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:18px;color:#cfc6b2;margin:16px 0 0;max-width:34em}
+
+/* hero image with a live CRT */
+.unit{position:relative;container-type:inline-size;border-radius:18px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.7),0 0 0 1px #2a1a10}
+.unit img{display:block;width:100%;height:auto}
+.unit .scr{position:absolute;left:9.3%;top:31.4%;width:23.6%;height:3.9%;display:flex;align-items:center;justify-content:center;
+  background:#0d2a15;font:1.8cqw/1 VT323,monospace;letter-spacing:-.02em;color:var(--g);text-shadow:var(--glow);white-space:nowrap;overflow:hidden;border-radius:2px}
+
+/* download */
+.dlbox{margin:40px 0 10px;border:2px solid var(--orange);border-radius:18px;padding:26px;background:linear-gradient(160deg,#1a120c,#0f0d0b);
+  box-shadow:0 0 0 6px #120c08,0 0 0 8px #3a1d0a,0 30px 80px rgba(0,0,0,.5)}
+.dlbox h2{margin:0 0 16px;font:28px VT323,monospace;color:var(--g);text-shadow:var(--glow);font-weight:400}
+.dl{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.btn{display:block;text-decoration:none;text-align:center;padding:18px 14px 15px;border-radius:12px;background:#d9cfb8;color:#1d1a15;
+  box-shadow:inset 0 -5px 0 #a99f88,0 6px 0 #0006;font-size:clamp(26px,3.4vw,34px);line-height:1;text-transform:uppercase;transition:transform .08s,box-shadow .08s,background .15s;position:relative}
+.btn small{display:block;font-size:16px;margin-top:8px;color:#5a5346;letter-spacing:.02em}
+.btn .led{position:absolute;top:12px;right:14px;width:16px;height:8px;border-radius:2px;background:#4a4a40;box-shadow:inset 0 1px 2px #0008}
+.btn.primary .led{background:var(--g);box-shadow:0 0 10px var(--g)}
+.btn:hover,.btn:focus-visible{background:#ece2cb;outline:none}
+.btn:active{transform:translateY(3px);box-shadow:inset 0 -2px 0 #a99f88,0 3px 0 #0006}
+.meta{display:flex;flex-wrap:wrap;gap:6px 22px;justify-content:center;margin-top:18px;font:20px VT323,monospace;color:var(--mute)}
+.meta a{color:var(--g)}
+.phone{display:none;margin:16px 0 0;text-align:center;font:20px VT323,monospace;color:var(--orange)}
+.phone button{font:21px VT323,monospace;margin-top:8px;background:transparent;color:var(--orange);border:2px solid var(--orange);padding:6px 14px;border-radius:8px;cursor:pointer}
+.is-phone .phone{display:block}
+
+section h2.sec{font:700 clamp(36px,5vw,56px)/1 Barlow,sans-serif;text-transform:uppercase;color:#fff;margin:84px 0 22px;display:flex;align-items:center;gap:16px}
+section h2.sec::before{content:"";width:22px;height:22px;background:var(--orange);border-radius:4px;box-shadow:0 0 18px rgba(255,106,19,.5);flex:none}
+
+/* hear it */
+.two{display:grid;grid-template-columns:minmax(0,370px) 1fr;gap:36px;align-items:start}
+.reel{position:relative;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:9/16;box-shadow:0 0 0 2px #2b1a0e,0 30px 70px rgba(0,0,0,.6)}
+.reel video{display:block;width:100%;height:100%;object-fit:cover}
+.unmute{position:absolute;right:10px;bottom:10px;font:21px VT323,monospace;background:rgba(0,0,0,.75);color:var(--g);border:2px solid var(--g);padding:4px 10px;border-radius:6px;cursor:pointer;text-shadow:var(--glow)}
+.feat{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.feat li{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 16px 14px}
+.feat b{display:block;color:#fff;font-size:24px;text-transform:uppercase;line-height:1.05}
+.feat b span{color:var(--orange)}
+.feat p{margin:6px 0 0;font:400 16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#bdb5a3}
+
+/* chain */
+.chain{margin:26px 0 0;padding:18px;border-radius:14px;background:#06110a;border:2px solid var(--g-dark);font:21px/1.6 VT323,monospace;color:var(--g);text-shadow:var(--glow)}
+.chain .row{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.chain .n{color:var(--g-dim);width:1.4em}
+.chain span.m{border:1px solid var(--g-dim);padding:0 8px;border-radius:3px}
+.chain .arrow{color:var(--g-dim)}
+
+/* presets */
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.cat{background:#06110a;border:2px solid var(--g-dark);border-radius:14px;padding:16px 16px 12px;font:20px/1.35 VT323,monospace;color:var(--g);text-shadow:var(--glow)}
+.cat h3{margin:0 0 10px;font:700 22px Barlow,sans-serif;color:#fff;text-shadow:none;text-transform:uppercase;display:flex;justify-content:space-between}
+.cat h3 small{font:20px VT323,monospace;color:var(--g-dim)}
+.cat ul{list-style:none;margin:0;padding:0}
+.cat li{padding:2px 6px;border-radius:3px;cursor:default}
+.cat li:hover{background:var(--g);color:#021006;text-shadow:none}
+.cat li::before{content:"> ";color:var(--g-dim)}
+.cat li:hover::before{color:#0d3a18}
+
+.gallery{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.gallery img{width:100%;height:auto;display:block;border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.6)}
+
+.notes{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.notes>div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.notes h3{margin:0 0 8px;font:700 24px Barlow,sans-serif;color:var(--orange);text-transform:uppercase}
+.notes p{margin:0 0 8px;font:400 16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#cfc6b2}
+.notes code{font:18px VT323,monospace;color:var(--g);background:#06110a;padding:0 5px;border-radius:3px}
+
+.credits{font:400 15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#a49c8b;columns:2;column-gap:34px}
+.credits p{margin:0 0 10px;break-inside:avoid}
+.credits b{color:var(--cream);font-weight:600}
+
+.cta{margin:84px 0 0;text-align:center;padding:40px 20px;border-radius:18px;background:linear-gradient(160deg,#1a120c,#0f0d0b);border:2px solid var(--orange)}
+.cta p{font-size:clamp(30px,4.4vw,48px);line-height:1;color:#fff;margin:0 0 20px;text-transform:uppercase}
+.cta .btn{max-width:440px;margin:0 auto}
+
+footer{margin:70px 0 0;padding:28px 0 44px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between;color:var(--mute);font:20px VT323,monospace}
+footer img{height:40px;width:auto;display:block}
+footer a{color:var(--g)}
+
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr}
+  .two{grid-template-columns:1fr}
+  .reel{max-width:370px;margin:0 auto;width:100%}
+  .cats{grid-template-columns:1fr 1fr}
+  .credits{columns:1}
+}
+@media (max-width:600px){
+  .dl,.feat,.gallery,.notes,.cats{grid-template-columns:1fr}
+  header .path{display:none}
+  .dlbox{padding:20px 16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="home" href="/" aria-label="Yishay Raziel, home"><img src="logo_lockup.png" alt="Yishay Raziel, Music &amp; Sound" width="873" height="176"></a>
+    <span class="path">yraziel.com/anal-log</span>
+  </header>
+
+  <div class="hero">
+    <div>
+      <p class="eyebrow" id="eyebrow" aria-hidden="true"></p>
+      <h1>Anal-Log</h1>
+      <div class="by">by Yishay Raziel</div>
+      <div class="stripe" aria-hidden="true"></div>
+      <p class="tag">Make it sound <em>worse.</em><br>For free.</p>
+      <p class="sub">Phones, walkie-talkies, megaphones, old radios, the TV in the next room. A speaker, phone and radio simulator for voices, music and sound design. VST3 and AU for Mac and Windows.</p>
+    </div>
+    <div class="unit">
+      <img src="anal-log_front.webp" width="1448" height="1086" alt="The Anal-Log plugin: an orange box with a green CRT screen showing the preset and the signal chain, a panel of knobs, and two rows of module keys">
+      <div class="scr" id="scr" aria-hidden="true">&lt; MEGAPHONE IN THE STREET &gt;</div>
+    </div>
+  </div>
+
+  <div class="dlbox" id="download">
+    <h2>&gt; DOWNLOAD_</h2>
+    <div class="dl">
+      <a class="btn" id="btn-mac" href="https://github.com/yishayraziel/speakit/releases/latest/download/Anal-Log_mac.dmg"><span class="led"></span>Mac
+        <small>VST3 + AU + app · Apple Silicon + Intel · <span data-size="Anal-Log_mac.dmg">DMG</span></small></a>
+      <a class="btn" id="btn-win" href="https://github.com/yishayraziel/speakit/releases/latest/download/Anal-Log_win_setup.exe"><span class="led"></span>Windows
+        <small>VST3 + app · 64-bit installer · <span data-size="Anal-Log_win_setup.exe">EXE</span></small></a>
+    </div>
+    <div class="phone">ON A PHONE? ANAL-LOG RUNS ON YOUR COMPUTER.<br><button type="button" id="share">SEND THIS LINK TO MY COMPUTER</button></div>
+    <div class="meta">
+      <span>VERSION <span id="ver">0.4.6</span></span>
+      <span>FREE · NO SIGN-UP</span>
+      <span>VST3 ONLY: <a href="https://github.com/yishayraziel/speakit/releases/latest/download/Anal-Log_mac_VST3.zip">MAC.ZIP</a> · <a href="https://github.com/yishayraziel/speakit/releases/latest/download/Anal-Log_win_VST3.zip">WIN.ZIP</a></span>
+    </div>
+  </div>
+
+  <section>
+    <h2 class="sec">Hear it</h2>
+    <div class="two">
+      <div class="reel">
+        <video id="reel" src="anal-log_reel.mp4" poster="reel_poster.jpg" playsinline muted loop autoplay preload="metadata"></video>
+        <button class="unmute" id="unmute" type="button">&#9835; SOUND ON</button>
+      </div>
+      <div>
+        <ul class="feat">
+          <li><b><span>15</span> modules</b><p>Gate, comp, EQ, drive, telecom, crush, mod, gramophone, radio tuning, speaker, cover, mic, rotary, delay and room, in a fixed chain.</p></li>
+          <li><b><span>9</span> real codecs</b><p>G.711, ADPCM, GSM, three Speex rates and an LPC vocoder for robots and whispers. Real round trips at 8 kHz, with bursty packet loss.</p></li>
+          <li><b><span>101</span> impulse responses</b><p>Speakers, covers, vintage mics and 43 real rooms, from a tiled shower to a subway platform.</p></li>
+          <li><b><span>55</span> presets</b><p>In six categories, all level-matched so you can flip through them without jumping on the fader.</p></li>
+          <li><b><span>60</span> background sounds</b><p>A sample bay with street, indoor, line, machine and music beds: rain, crowds, dial tones, static.</p></li>
+          <li><b>Moves with the music</b><p>4 LFOs and 2 envelope followers on drive, damage, filters, mic, room and output.</p></li>
+        </ul>
+        <div class="chain" aria-label="Signal chain">
+          <div class="row"><span class="n">1</span><span class="m">IN</span><span class="arrow">&rarr;</span><span class="m">GATE</span><span class="m">COMP</span><span class="m">EQ</span></div>
+          <div class="row"><span class="n">2</span><span class="m">DRIVE</span><span class="m">TEL</span><span class="m">CRUSH</span><span class="m">MOD</span><span class="m">PHONO</span><span class="m">TUNE</span></div>
+          <div class="row"><span class="n">3</span><span class="m">SPKR</span><span class="m">COVER</span><span class="m">MIC</span><span class="m">ROTR</span><span class="m">DELAY</span><span class="m">ROOM</span><span class="arrow">&rarr;</span><span class="m">OUT</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec">55 presets</h2>
+    <div class="cats">
+      <div class="cat"><h3>PHONES <small>14</small></h3><ul><li>DESK PHONE - BAD LINE</li><li>DESK PHONE - CLEAN</li><li>CALLER ON HOLD</li><li>PAYPHONE ON THE STREET</li><li>MOBILE - DRIVING AWAY</li><li>VOIP - THIN AND WATERY</li><li>VIDEO CALL</li><li>ANSWERING MACHINE</li><li>CALL CENTER AGENT</li><li>CONFERENCE CALL ROOM</li><li>MOBILE - NO RECEPTION</li><li>CALLING FROM THE PUB</li><li>COMMUTER ON THE TRAIN</li><li>CALL FROM THE BUS STOP</li></ul></div>
+      <div class="cat"><h3>RADIO &amp; COMMS <small>9</small></h3><ul><li>WALKIE TALKIE</li><li>TRANSISTOR RADIO</li><li>RADIO OFF STATION</li><li>BUNKER SIGNAL</li><li>POLICE SCANNER</li><li>PILOT TO TOWER</li><li>AM TALK SHOW 1950s</li><li>WARTIME BROADCAST</li><li>FM IN THE CAR</li></ul></div>
+      <div class="cat"><h3>PA &amp; ANNOUNCEMENTS <small>9</small></h3><ul><li>COCKPIT ANNOUNCEMENT</li><li>MEGAPHONE IN THE STREET</li><li>STADIUM PA</li><li>TRAIN STATION ANNOUNCER</li><li>SUBWAY PLATFORM</li><li>SUPERMARKET PAGING</li><li>SCHOOL INTERCOM</li><li>COACH WITH A MEGAPHONE</li><li>MALL ANNOUNCEMENT</li></ul></div>
+      <div class="cat"><h3>PLACES <small>9</small></h3><ul><li>NEIGHBOR&#x27;S PARTY</li><li>TV IN THE NEXT ROOM</li><li>CAR STEREO FROM OUTSIDE</li><li>SHOWER RADIO</li><li>MUSIC IN THE STAIRWELL</li><li>DOWNSTAIRS NEIGHBOR&#x27;S TV</li><li>PIZZERIA RADIO</li><li>LAUNDROMAT RADIO</li><li>BUSKER ACROSS THE STREET</li></ul></div>
+      <div class="cat"><h3>VINTAGE <small>7</small></h3><ul><li>OLD GRAMOPHONE</li><li>CASSETTE DICTATION</li><li>1930s NEWSREEL</li><li>CRYSTAL MIC DEMO TAPE</li><li>HARMONICA BULLET MIC</li><li>BROKEN STAGE MIC</li><li>LO-FI RIBBON VOCAL</li></ul></div>
+      <div class="cat"><h3>FX <small>7</small></h3><ul><li>INSIDE A BIN</li><li>SPINNING CABINET</li><li>ROBOT</li><li>WHISPER SYNTH</li><li>8-BIT TOY</li><li>ROBOT IN A TIN CAN</li><li>VOICE DOWN THE ALLEY</li></ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec">The box</h2>
+    <div class="gallery">
+      <img src="anal-log_left.webp" width="1448" height="1086" loading="lazy" alt="Anal-Log seen from the left">
+      <img src="anal-log_right.webp" width="1448" height="1086" loading="lazy" alt="Anal-Log seen from the right">
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec">Install</h2>
+    <div class="notes">
+      <div>
+        <h3>Mac</h3>
+        <p>Open the DMG and run the installer. It's signed and notarized by Apple.</p>
+        <p>VST3 goes to <code>/Library/Audio/Plug-Ins/VST3</code>, AU to <code>/Library/Audio/Plug-Ins/Components</code>. Rescan plugins in your DAW.</p>
+      </div>
+      <div>
+        <h3>Windows</h3>
+        <p>Run <code>Anal-Log_win_setup.exe</code>. If SmartScreen warns you, click <code>More info</code> and then <code>Run anyway</code>.</p>
+        <p>VST3 goes to <code>C:\Program Files\Common Files\VST3</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec">Credits</h2>
+    <div class="credits">
+      <p><b>Room IRs:</b> MIT IR Survey, James Traer and Josh H. McDermott, MIT (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>). BUT Speech@FIT Reverb Database, Brno University of Technology (<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>).</p>
+      <p><b>Mic IRs:</b> MicIRP and Xaudia.com, Microphone Impulse Response Project by Stewart Tavener (<a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>). The modified mic IRs stay under CC BY-SA 4.0.</p>
+      <p><b>Speaker and room IRs:</b> IR-Library by Conner (MIT License). Some devices use original modeled IRs.</p>
+      <p><b>Background sounds:</b> CC0 recordings from noixer (Freesound) and AtomCut, plus original synthesized line sounds.</p>
+      <p><b>Codecs and code:</b> JUCE, libgsm, Speex. Full list and license texts in <a href="https://github.com/yishayraziel/speakit/blob/main/THIRD_PARTY_NOTICES.txt">THIRD_PARTY_NOTICES.txt</a>, which also ships with every download.</p>
+      <p>All DSP, presets and design are original work by Yishay Raziel. Anal-Log is free and non-commercial.</p>
+    </div>
+  </section>
+
+  <div class="cta">
+    <p>Do it Anal-Log.</p>
+    <a class="btn primary" href="#download"><span class="led"></span>Download free<small>Mac + Windows · VST3 / AU</small></a>
+  </div>
+
+  <footer>
+    <a href="/" aria-label="Yishay Raziel, home"><img src="logo_lockup.png" alt="Yishay Raziel, Music &amp; Sound" width="873" height="176" loading="lazy"></a>
+    <span>&copy; <span id="yr">2026</span> YISHAY RAZIEL · <a href="/contact">CONTACT</a> · <a href="https://github.com/yishayraziel/speakit">SOURCE</a></span>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const ua = navigator.userAgent, plat = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "";
+  const isMac = /Mac|iPhone|iPad/i.test(plat + ua), isWin = /Win/i.test(plat + ua);
+  if (isWin || isMac) document.getElementById(isWin ? "btn-win" : "btn-mac").classList.add("primary");
+  document.getElementById("yr").textContent = new Date().getFullYear();
+
+  if (/iPhone|iPad|Android/i.test(ua)) {
+    document.body.classList.add("is-phone");
+    const sb = document.getElementById("share"), url = "https://yraziel.com/anal-log/";
+    sb.addEventListener("click", async () => {
+      try { if (navigator.share) { await navigator.share({ title: "Anal-Log", text: "Anal-Log: free speaker & phone simulator (Mac + Windows)", url }); return; } } catch (e) { return; }
+      try { await navigator.clipboard.writeText(url); sb.textContent = "LINK COPIED"; } catch (e) { location.href = "mailto:?subject=Anal-Log&body=" + encodeURIComponent(url); }
+    });
+  }
+
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // eyebrow: typed like the plugin's screen
+  const eb = document.getElementById("eyebrow"), msg = "> FREE SPEAKER / PHONE / RADIO SIMULATOR";
+  if (reduce) eb.textContent = msg; else { let k = 0; const t = () => { eb.textContent = msg.slice(0, k) + (k < msg.length ? "_" : ""); if (k++ < msg.length) setTimeout(t, 28 + Math.random() * 30); }; setTimeout(t, 300); }
+
+  // the CRT in the hero photo flips through the presets
+  const names = ["DESK PHONE - BAD LINE", "DESK PHONE - CLEAN", "CALLER ON HOLD", "PAYPHONE ON THE STREET", "MOBILE - DRIVING AWAY", "VOIP - THIN AND WATERY", "VIDEO CALL", "ANSWERING MACHINE", "CALL CENTER AGENT", "CONFERENCE CALL ROOM", "MOBILE - NO RECEPTION", "CALLING FROM THE PUB", "COMMUTER ON THE TRAIN", "CALL FROM THE BUS STOP", "WALKIE TALKIE", "TRANSISTOR RADIO", "RADIO OFF STATION", "BUNKER SIGNAL", "POLICE SCANNER", "PILOT TO TOWER", "AM TALK SHOW 1950s", "WARTIME BROADCAST", "FM IN THE CAR", "COCKPIT ANNOUNCEMENT", "MEGAPHONE IN THE STREET", "STADIUM PA", "TRAIN STATION ANNOUNCER", "SUBWAY PLATFORM", "SUPERMARKET PAGING", "SCHOOL INTERCOM", "COACH WITH A MEGAPHONE", "MALL ANNOUNCEMENT", "NEIGHBOR'S PARTY", "TV IN THE NEXT ROOM", "CAR STEREO FROM OUTSIDE", "SHOWER RADIO", "MUSIC IN THE STAIRWELL", "DOWNSTAIRS NEIGHBOR'S TV", "PIZZERIA RADIO", "LAUNDROMAT RADIO", "BUSKER ACROSS THE STREET", "OLD GRAMOPHONE", "CASSETTE DICTATION", "1930s NEWSREEL", "CRYSTAL MIC DEMO TAPE", "HARMONICA BULLET MIC", "BROKEN STAGE MIC", "LO-FI RIBBON VOCAL", "INSIDE A BIN", "SPINNING CABINET", "ROBOT", "WHISPER SYNTH", "8-BIT TOY", "ROBOT IN A TIN CAN", "VOICE DOWN THE ALLEY"];
+  const scr = document.getElementById("scr");
+  if (!reduce) { let i = names.indexOf("MEGAPHONE IN THE STREET"); setInterval(() => { i = (i + 1) % names.length; scr.textContent = "< " + names[i] + " >"; }, 1400); }
+
+  fetch("https://api.github.com/repos/yishayraziel/speakit/releases/latest").then(r => r.ok ? r.json() : null).then(rel => {
+    if (!rel) return;
+    document.getElementById("ver").textContent = rel.tag_name.replace(/^v/, "");
+    for (const a of rel.assets || []) {
+      const el = document.querySelector('[data-size="' + a.name + '"]');
+      if (el) el.textContent = Math.round(a.size / 1048576) + " MB";
+    }
+  }).catch(() => {});
+
+  const v = document.getElementById("reel"), b = document.getElementById("unmute");
+  b.addEventListener("click", () => {
+    v.muted = !v.muted; if (!v.muted) { v.currentTime = 0; v.play(); }
+    b.innerHTML = v.muted ? "&#9835; SOUND ON" : "&#9835; SOUND OFF";
+  });
+})();
+</script>
+</body>
+</html>
