@@ -1,0 +1,64 @@
+[
+  {
+    "name": "WADAHEX",
+    "type": "Drum Synth",
+    "tagline": "Analog hex-pad drums, straight out of 1981.",
+    "formats": "VST3 · Mac + Windows",
+    "status": "free",
+    "url": "/wadahex",
+    "image": "/wadahex/wadahex_front.webp"
+  },
+  {
+    "name": "Anal-Log",
+    "type": "Speaker & Phone Simulator",
+    "tagline": "Phones, walkie-talkies, megaphones, old radios and the party next door.",
+    "formats": "VST3 / AU · Mac + Windows",
+    "status": "free",
+    "url": "/anal-log",
+    "image": "/anal-log/anal-log_front.webp"
+  },
+  {
+    "name": "Same Boy",
+    "type": "Chiptune Synth",
+    "tagline": "Classic 8-bit handheld sounds in a synth.",
+    "formats": "VST3 · Mac + Windows",
+    "status": "free",
+    "url": "https://instagram.com/yraziel",
+    "cta": "Get it on Instagram"
+  },
+  {
+    "name": "HEADJOB",
+    "type": "Saturation",
+    "tagline": "Triode, pentode and tape saturation in one strip.",
+    "formats": "VST3 · Mac + Windows",
+    "status": "beta"
+  },
+  {
+    "name": "RADIOTT",
+    "type": "Voiceover Processor",
+    "tagline": "One knob from raw recording to on-air voice, with built-in AI cleaning.",
+    "formats": "VST3",
+    "status": "soon"
+  },
+  {
+    "name": "DS-COUNT",
+    "type": "Mastering Dynamics",
+    "tagline": "Mastering-grade dynamics with a hardware soul.",
+    "formats": "VST3 / AU / Standalone · Mac",
+    "status": "soon"
+  },
+  {
+    "name": "IVR Monitor",
+    "type": "Telephony Monitor",
+    "tagline": "Hear your mix through IVR codecs before it goes on the phone line.",
+    "formats": "VST3 · Mac + Windows",
+    "status": "soon"
+  },
+  {
+    "name": "Mix Bus",
+    "type": "Mix Bus Processor",
+    "tagline": "Finishing chain for the mix bus.",
+    "formats": "VST3 · Mac",
+    "status": "soon"
+  }
+]

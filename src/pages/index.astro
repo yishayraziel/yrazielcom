@@ -57,6 +57,7 @@ const suggestionIndex = [
       </a>
       <nav class="top-nav" aria-label="Primary">
         <a href="/" class="nav-link is-active" data-astro-prefetch>Works</a>
+        <a href="/plugins" class="nav-link" data-astro-prefetch>Plugins</a>
         <a href="/about" class="nav-link" data-astro-prefetch>About</a>
         <a href="/contact" class="nav-link" data-astro-prefetch>Contact</a>
       </nav>
@@ -221,6 +222,7 @@ const suggestionIndex = [
       }
       .nav-link:hover { color: var(--fg); }
       .nav-link.is-active { color: var(--fg); border-bottom-color: var(--fg); }
+      @media (max-width: 480px) { .top-nav { gap: 1.1rem; } .nav-link { letter-spacing: 0.12em; } }
       .controls {
         display: flex;
         flex-wrap: wrap;
