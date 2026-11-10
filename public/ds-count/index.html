@@ -120,6 +120,7 @@ body.cl .lcd{color:#fff}
 
 /* MDI grid of child windows */
 .grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;margin-top:18px}
+.film{display:flex;gap:22px;align-items:center;justify-content:center;flex-wrap:wrap}.film video{display:block;width:100%;max-width:340px;height:auto;aspect-ratio:9/16;object-fit:cover;background:#000;border:1px solid var(--ink)}.film .cap{max-width:420px}
 .c12{grid-column:span 12}.c7{grid-column:span 7}.c5{grid-column:span 5}.c6{grid-column:span 6}.c4{grid-column:span 4}.c8{grid-column:span 8}
 .pane{padding:12px 14px 14px}
 .pane p{margin:0 0 10px}
@@ -342,6 +343,16 @@ dialog .row{grid-column:1/-1;display:flex;justify-content:center}
       </section>
 
       <div class="grid">
+        <section class="win child c12" id="film" aria-labelledby="t-film">
+          <div class="tb"><div class="box ctl" aria-hidden="true"></div><div class="t" id="t-film">Media Player - DS-COUNT.MP4</div><div class="box max" aria-hidden="true"></div></div>
+          <div class="pane film">
+            <video controls playsinline preload="none" poster="ds-count-1993-poster.webp" width="720" height="1280">
+              <source src="ds-count-1993.mp4" type="video/mp4">
+            </video>
+            <div class="cap grp"><h3>The 1993 Commercial</h3><p>Thirty seconds from a year that wasn't ready for it. Every screen in the film is the real plugin, processing real audio. The soundtrack was mastered through DS-COUNT itself.</p></div>
+          </div>
+        </section>
+
         <section class="win child c7" id="features" aria-labelledby="t-feat">
           <div class="tb"><div class="box ctl" aria-hidden="true"></div><div class="t" id="t-feat">What It Does</div><div class="box max" aria-hidden="true"></div></div>
           <div class="pane">
