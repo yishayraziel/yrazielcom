@@ -217,7 +217,7 @@ dialog .row{grid-column:1/-1;display:flex;justify-content:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
-<body data-crt="off">
+<body data-crt="soft">
 <div id="crt" aria-hidden="true"></div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -279,8 +279,8 @@ dialog .row{grid-column:1/-1;display:flex;justify-content:center}
           <button role="menuitemradio" data-skin="w311" aria-checked="true">Skin: 3.11</button>
           <button role="menuitemradio" data-skin="cl" aria-checked="false">Skin: Classic</button>
           <hr>
-          <button role="menuitemradio" data-crt="off" aria-checked="true">Screen Effect: Off</button>
-          <button role="menuitemradio" data-crt="soft" aria-checked="false">Screen Effect: Soft</button>
+          <button role="menuitemradio" data-crt="off" aria-checked="false">Screen Effect: Off</button>
+          <button role="menuitemradio" data-crt="soft" aria-checked="true">Screen Effect: Soft</button>
           <button role="menuitemradio" data-crt="strong" aria-checked="false">Screen Effect: Strong</button>
         </div>
       </div>
@@ -505,7 +505,7 @@ dialog .row{grid-column:1/-1;display:flex;justify-content:center}
   d.querySelectorAll('[data-skin]').forEach(function(x){x.addEventListener('click',function(){setSkin(x.getAttribute('data-skin'));closeAll()})});
   d.querySelectorAll('button[data-crt]').forEach(function(x){x.addEventListener('click',function(){setCrt(x.getAttribute('data-crt'));closeAll()})});
   setSkin(store.get('dsc-skin')==='cl'?'cl':'w311');
-  var c=store.get('dsc-crt'); setCrt(c==='soft'||c==='strong'?c:'off');
+  var c=store.get('dsc-crt'); setCrt(c==='off'||c==='strong'?c:'soft');
 
   // ---- about ----
   var dlg=d.getElementById('about');
