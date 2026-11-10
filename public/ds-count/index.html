@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>DS-COUNT: mastering dynamics by Yishay Raziel (Mac + Windows)</title>
+<meta name="description" content="DS-COUNT by Yishay Raziel. Two-channel mastering dynamics with linear-phase band processing and de-essing, dual release, look-ahead, Mid/Side, true-peak limiter, loudness and dither. VST3, AU and Standalone for Mac and Windows.">
+<meta name="theme-color" content="#008080">
+<link rel="canonical" href="https://yraziel.com/ds-count/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://yraziel.com/ds-count/">
+<meta property="og:title" content="DS-COUNT: mastering dynamics by Yishay Raziel">
+<meta property="og:description" content="Two-channel mastering dynamics. Band de-essing, dual release, true-peak limiting. VST3, AU and Standalone for Mac and Windows.">
+<meta property="og:image" content="https://yraziel.com/ds-count/og.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preload" href="DSCSystem-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="DSCSystem-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:"DSC System";font-weight:700;src:url(DSCSystem-Bold.woff2) format("woff2");font-display:swap}
+@font-face{font-family:"DSC System";font-weight:400;src:url(DSCSystem-Regular.woff2) format("woff2");font-display:swap}
+@font-face{font-family:ChicagoFLF;src:url(ChicagoFLF.woff2) format("woff2");font-display:swap}
+
+/* ---- 3.11 skin (default) ---- */
+:root{
+  --desk:#008080; --face:#c0c0c0; --hi:#fff; --sh:#808080; --ink:#000;
+  --title:#000080; --title-ink:#fff; --title-off:#fff; --title-off-ink:#000;
+  --sel:#000080; --sel-ink:#fff; --field:#fff; --lcd:#000; --lcd-ink:#00ff00; --accent:#ffff00;
+  --font:"DSC System",Arial,Helvetica,sans-serif;
+  color-scheme:light;
+}
+body.cl{
+  --desk:#fff; --face:#fff; --hi:#fff; --sh:#000; --ink:#000;
+  --title:#fff; --title-ink:#000; --sel:#000; --sel-ink:#fff; --field:#fff; --lcd:#000; --lcd-ink:#fff; --accent:#fff;
+  --font:ChicagoFLF,"Chicago",Geneva,Helvetica,sans-serif;
+}
+*{box-sizing:border-box}
+html{background:var(--desk)}
+body{margin:0;min-height:100vh;color:var(--ink);font:400 18px/1.35 var(--font);background:var(--desk);
+  -webkit-font-smoothing:none;font-smooth:never;text-rendering:optimizeSpeed;overflow-x:hidden}
+body.cl{background-color:#fff;background-image:
+  linear-gradient(45deg,#000 25%,transparent 25%,transparent 75%,#000 75%),
+  linear-gradient(45deg,#000 25%,transparent 25%,transparent 75%,#000 75%);
+  background-size:2px 2px;background-position:0 0,1px 1px}
+a{color:inherit}
+b,strong,h1,h2,h3,.bold{font-weight:700}
+img{display:block;max-width:100%;height:auto}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---- Windows ---- */
+.desk{max-width:1240px;margin:0 auto;padding:14px 14px 0}
+.win{background:var(--face);border:1px solid var(--ink);
+  box-shadow:inset 0 0 0 3px var(--face),inset 0 0 0 4px var(--ink);padding:4px;position:relative}
+.win.child{box-shadow:inset 0 0 0 2px var(--face),inset 0 0 0 3px var(--ink);padding:3px}
+.tb{display:flex;align-items:stretch;height:30px;background:var(--title);color:var(--title-ink);border-bottom:1px solid var(--ink);user-select:none}
+.tb .t{flex:1;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 6px}
+.box{width:30px;flex:none;background:var(--face);border-left:1px solid var(--ink);border-right:1px solid var(--ink);display:grid;place-items:center;cursor:pointer;
+  box-shadow:inset 1px 1px var(--hi),inset -2px -2px var(--sh)}
+.box:first-child{border-left:0}
+.box:last-child{border-right:0}
+.box.ctl::before{content:"";width:16px;height:4px;background:var(--hi);border:1px solid var(--ink);box-shadow:1px 1px var(--sh)}
+.box.min::before,.box.max::before{content:"";border:7px solid transparent}
+.box.min::before{border-top:7px solid var(--ink);margin-top:7px}
+.box.max::before{border-bottom:7px solid var(--ink);margin-bottom:7px}
+.win.inactive > .tb{background:var(--title-off);color:var(--title-off-ink)}
+.menu{display:flex;gap:2px;background:var(--hi);border-bottom:1px solid var(--ink);padding:2px 4px;position:relative;z-index:20;flex-wrap:wrap}
+.menu > div{position:relative}
+.menu button.m{font:inherit;color:inherit;background:none;border:0;padding:3px 10px;cursor:pointer}
+.menu button.m u{text-decoration:underline;text-underline-offset:2px}
+.menu button.m[aria-expanded=true]{background:var(--sel);color:var(--sel-ink)}
+.drop{position:absolute;left:0;top:100%;min-width:230px;background:var(--hi);border:1px solid var(--ink);box-shadow:2px 2px 0 var(--ink);padding:2px 0;display:none}
+.drop.open{display:block}
+.drop a,.drop button{display:flex;justify-content:space-between;gap:20px;width:100%;text-align:left;font:inherit;color:inherit;background:none;border:0;padding:4px 14px 4px 24px;text-decoration:none;cursor:pointer;position:relative;white-space:nowrap}
+.drop a:hover,.drop button:hover,.drop a:focus,.drop button:focus{background:var(--sel);color:var(--sel-ink);outline:0}
+.drop button[aria-checked=true]::before{content:"";position:absolute;left:8px;top:50%;width:6px;height:6px;margin-top:-3px;background:currentColor}
+.drop hr{border:0;border-top:1px solid var(--ink);margin:3px 0}
+.drop .k{color:var(--sh)}
+.drop a:hover .k,.drop button:hover .k{color:inherit}
+
+/* toolbar like the plugin */
+.tools{display:flex;gap:6px;align-items:center;padding:6px 6px;border-bottom:1px solid var(--ink);flex-wrap:wrap}
+.tools .sp{flex:1}
+.tools .lbl{margin-right:2px}
+
+/* buttons: 3.11 push buttons */
+.btn{font:700 18px/1 var(--font);color:var(--ink);background:var(--face);border:1px solid var(--ink);border-radius:3px;
+  padding:7px 16px;min-height:36px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;
+  box-shadow:inset 2px 2px var(--hi),inset -2px -2px var(--sh)}
+.btn:active,.btn[aria-pressed=true]{box-shadow:inset 2px 2px var(--sh);padding:8px 15px 6px 17px}
+.btn.def{outline:2px solid var(--ink);outline-offset:-1px;border-width:2px}
+.btn:focus-visible{outline:1px dotted var(--ink);outline-offset:-6px}
+.btn.icon{flex-direction:column;gap:4px;padding:6px 12px;font-size:16px;min-width:84px}
+.btn.icon svg{width:32px;height:32px}
+body.cl .btn{border-radius:10px;box-shadow:none;border:2px solid #000}
+body.cl .btn:active,body.cl .btn[aria-pressed=true]{background:#000;color:#fff;padding:7px 16px}
+body.cl .btn.def{outline:3px solid #000;outline-offset:2px}
+
+/* client area */
+.client{padding:14px}
+.hero{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:18px;align-items:start}
+.word{font:700 clamp(44px,6.4vw,84px)/1 var(--font);margin:10px 0 0;letter-spacing:.01em;white-space:nowrap}
+.ver{font-size:18px;font-weight:400;letter-spacing:0}
+.by{margin:8px 0 0;font-size:20px}
+.lede{font-size:22px;line-height:1.3;margin:16px 0 0}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 0}
+.note{margin:12px 0 0;font-size:16px}
+.lcd{background:var(--lcd);color:var(--lcd-ink);font:700 18px/1.2 var(--font);padding:6px 10px;border:1px solid var(--ink);display:inline-block}
+body.cl .lcd{color:#fff}
+
+.shot{background:#000;border:1px solid var(--ink)}
+.shot img{width:100%;aspect-ratio:1620/968;image-rendering:auto}
+.shotbar{display:flex;flex-wrap:wrap;gap:14px;padding:8px 6px 4px}
+
+/* radio + checkbox like the plugin */
+.rb{display:inline-flex;align-items:center;gap:7px;cursor:pointer}
+.rb input{appearance:none;-webkit-appearance:none;width:16px;height:16px;margin:0;border:1px solid var(--ink);border-radius:50%;background:var(--field);display:grid;place-items:center;
+  box-shadow:inset 1px 1px var(--sh)}
+.rb input:checked::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--ink)}
+.rb input:focus-visible{outline:1px dotted var(--ink);outline-offset:2px}
+
+/* MDI grid of child windows */
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;margin-top:18px}
+.c12{grid-column:span 12}.c7{grid-column:span 7}.c5{grid-column:span 5}.c6{grid-column:span 6}.c4{grid-column:span 4}.c8{grid-column:span 8}
+.pane{padding:12px 14px 14px}
+.pane p{margin:0 0 10px}
+.grp{border:1px solid var(--ink);box-shadow:1px 1px var(--hi),inset 1px 1px var(--hi);padding:16px 12px 10px;margin:14px 0 0;position:relative}
+body.cl .grp{box-shadow:none}
+.grp > h3{position:absolute;top:-12px;left:10px;margin:0;padding:0 6px;font-size:18px;background:var(--face)}
+.grp p{margin:0;font-size:17px}
+.feat{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 14px}
+.kv{width:100%;border-collapse:collapse;font-size:17px}
+.kv th{text-align:left;font-weight:700;padding:5px 12px 5px 0;vertical-align:top;white-space:nowrap}
+.kv td{padding:5px 0;vertical-align:top}
+.kv tr+tr th,.kv tr+tr td{border-top:1px dotted var(--sh)}
+body.cl .kv tr+tr th,body.cl .kv tr+tr td{border-top-color:#000}
+
+/* list box with a 3.11 scroll bar */
+.list{background:var(--field);border:1px solid var(--ink);height:340px;overflow-y:scroll;margin:0;padding:2px 0;list-style:none;font-size:17px;
+  scrollbar-color:var(--sh) var(--face)}
+.list li{padding:2px 8px;cursor:default}
+.list li:hover{background:var(--sel);color:var(--sel-ink)}
+.list li.h{font-weight:700;background:none;color:inherit;border-top:1px solid var(--ink);margin-top:2px}
+.list li.h:first-child{border-top:0;margin-top:0}
+.list::-webkit-scrollbar{width:20px}
+.list::-webkit-scrollbar-track{background:var(--face);background-image:linear-gradient(45deg,var(--sh) 25%,transparent 25%,transparent 75%,var(--sh) 75%),linear-gradient(45deg,var(--sh) 25%,transparent 25%,transparent 75%,var(--sh) 75%);background-size:2px 2px;background-position:0 0,1px 1px;border-left:1px solid var(--ink)}
+.list::-webkit-scrollbar-thumb{background:var(--face);border:1px solid var(--ink);box-shadow:inset 1px 1px var(--hi),inset -1px -1px var(--sh)}
+
+/* download dialog */
+.dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:start}
+.dl .ico svg{width:64px;height:64px}
+.dlrow{display:flex;flex-wrap:wrap;gap:14px;margin:14px 0 6px}
+.dlrow .btn.icon{min-width:190px;font-size:18px;padding:10px 14px}
+.dlrow .btn.icon small{font-weight:400;font-size:15px}
+.steps{margin:6px 0 0;padding-left:22px;font-size:17px}
+.steps li{margin:2px 0}
+
+/* desktop icons and status bar */
+.status{display:flex;gap:4px;padding:4px 2px 0;font-size:16px;flex-wrap:wrap}
+.status > *{border:1px solid var(--sh);border-right-color:var(--hi);border-bottom-color:var(--hi);padding:3px 8px;flex:none}
+.status > .grow{flex:1;min-width:160px}
+body.cl .status > *{border:1px solid #000}
+.icons{display:flex;gap:26px;flex-wrap:wrap;padding:22px 6px 26px}
+.dicon{display:flex;flex-direction:column;align-items:center;gap:6px;width:96px;text-decoration:none;color:#fff;text-align:center;font-size:16px}
+.dicon svg{width:40px;height:40px}
+.dicon span{padding:1px 4px}
+.dicon:hover span,.dicon:focus span{background:var(--sel);color:var(--sel-ink)}
+body.cl .dicon{color:#000}
+body.cl .dicon span{background:#fff}
+body.cl .dicon:hover span,body.cl .dicon:focus span{background:#000;color:#fff}
+
+/* Classic skin: windows, title bars, menu bar */
+body.cl .win{border:1px solid #000;box-shadow:2px 2px 0 #000;padding:0}
+body.cl .win.child{padding:0}
+body.cl .tb{height:26px;background:repeating-linear-gradient(to bottom,#fff 0 3px,#000 3px 4px);background-clip:content-box;padding:3px 4px;border-bottom:1px solid #000}
+body.cl .tb .t{flex:none;margin:0 auto;background:#fff;padding:0 10px;font-weight:400;font-size:17px}
+body.cl .box{width:18px;height:18px;align-self:center;border:1px solid #000;box-shadow:none;background:#fff;margin:0 6px}
+body.cl .box.ctl::before,body.cl .box.min::before,body.cl .box.max::before{display:none}
+body.cl .box.min,body.cl .box.max{visibility:hidden;width:0;margin:0;border:0}
+body.cl .menu{border-bottom:1px solid #000}
+body.cl .grp > h3{font-weight:400}
+body.cl .word{font-weight:400}
+body.cl .list::-webkit-scrollbar-track{background-image:none;background:#fff}
+body.cl svg{filter:grayscale(1) contrast(1.6)}
+
+/* old-screen effect (Options > Screen Effect) */
+#crt{position:fixed;inset:0;pointer-events:none;z-index:100;display:none}
+body[data-crt=soft] #crt,body[data-crt=strong] #crt{display:block;
+  background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.13) 2px 3px),
+             radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(0,0,0,.35) 100%)}
+body[data-crt=strong] #crt{background:repeating-linear-gradient(to bottom,rgba(0,0,0,0) 0 2px,rgba(0,0,0,.24) 2px 3px),
+  repeating-linear-gradient(to right,rgba(255,0,0,.05) 0 1px,rgba(0,255,0,.05) 1px 2px,rgba(0,0,255,.05) 2px 3px),
+  radial-gradient(ellipse at center,rgba(0,0,0,0) 50%,rgba(0,0,0,.5) 100%)}
+body[data-crt=soft] .desk,body[data-crt=strong] .desk{filter:blur(.25px) saturate(1.08)}
+
+/* About dialog */
+dialog{border:0;padding:0;background:transparent;max-width:min(520px,94vw)}
+dialog::backdrop{background:rgba(0,0,0,.25)}
+dialog .pane{display:grid;grid-template-columns:auto 1fr;gap:16px}
+dialog .row{grid-column:1/-1;display:flex;justify-content:center}
+
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr}
+  .word{font-size:clamp(44px,12vw,84px)}
+  .c7,.c5,.c6,.c4,.c8{grid-column:span 12}
+}
+@media (max-width:560px){
+  .desk{padding:8px 8px 0}
+  .client{padding:10px}
+  .feat{grid-template-columns:1fr}
+  .tools .lbl,.tools .opt{display:none}
+  .dl{grid-template-columns:1fr}
+  .dl .ico{display:none}
+  .dlrow .btn.icon{min-width:0;flex:1}
+  .box.min,.box.max{display:none}
+  .tb .t{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-crt="off">
+<div id="crt" aria-hidden="true"></div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-disk" viewBox="0 0 32 32" shape-rendering="crispEdges">
+      <path fill="#000" d="M3 3h23l3 3v23H3z"/><path fill="#808080" d="M4 4h21l3 3v21H4z"/>
+      <path fill="#c0c0c0" d="M8 4h14v9H8z"/><path fill="#000" d="M17 5h3v7h-3z"/>
+      <path fill="#fff" d="M7 17h18v11H7z"/><path fill="#000" d="M9 20h14v1H9zM9 23h14v1H9z"/>
+    </symbol>
+    <symbol id="i-mac" viewBox="0 0 32 32" shape-rendering="crispEdges">
+      <path fill="#000" d="M6 1h20v27H6zM8 28h16v3H8z"/><path fill="#c0c0c0" d="M7 2h18v25H7zM9 28h14v2H9z"/>
+      <path fill="#000" d="M9 4h14v13H9z"/><path fill="#00a0a0" d="M10 5h12v11H10z"/>
+      <path fill="#fff" d="M12 7h3v1h-3zM12 9h7v1h-7z"/><path fill="#000" d="M18 21h5v1h-5z"/>
+    </symbol>
+    <symbol id="i-pc" viewBox="0 0 32 32" shape-rendering="crispEdges">
+      <path fill="#000" d="M3 2h26v19H3zM11 21h10v3H11zM2 25h28v5H2z"/><path fill="#c0c0c0" d="M4 3h24v17H4zM3 26h26v3H3z"/>
+      <path fill="#000" d="M6 5h20v13H6z"/><path fill="#000080" d="M7 6h18v11H7z"/>
+      <path fill="#fff" d="M9 8h6v1H9zM9 10h10v1H9z"/><path fill="#808080" d="M5 27h22v1H5z"/>
+    </symbol>
+    <symbol id="i-group" viewBox="0 0 32 32" shape-rendering="crispEdges">
+      <path fill="#000" d="M2 4h28v24H2z"/><path fill="#000080" d="M3 5h26v4H3z"/><path fill="#fff" d="M3 9h26v18H3z"/>
+      <path fill="#c0c0c0" d="M6 12h6v6H6zM14 12h6v6h-6zM22 12h5v6h-5z"/><path fill="#000" d="M6 21h6v1H6zM14 21h6v1h-6zM22 21h5v1h-5z"/>
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 32 32" shape-rendering="crispEdges">
+      <path fill="#000" d="M10 2h12v2h4v4h2v12h-2v4h-4v2H10v-2H6v-4H4V8h2V4h4z"/><path fill="#fff" d="M10 4h12v2h4v4h0v10h0v4h-4v2H10v-2H6v-4H6V8h0V6h4z"/>
+      <path fill="#000080" d="M14 8h4v4h-4zM13 14h5v9h2v2h-8v-2h2v-7h-1z"/>
+    </symbol>
+    <symbol id="i-meter" viewBox="0 0 32 32" shape-rendering="crispEdges">
+      <path fill="#000" d="M2 3h28v26H2z"/><path fill="#000" d="M3 4h26v24H3z"/>
+      <path fill="#00ff00" d="M6 18h4v8H6zM12 12h4v14h-4zM18 8h4v18h-4z"/><path fill="#ffff00" d="M18 6h4v2h-4zM24 14h4v12h-4z"/><path fill="#ff0000" d="M24 10h4v3h-4z"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="desk">
+  <div class="win main" id="top">
+    <div class="tb">
+      <div class="box ctl" title="yraziel.com" onclick="location.href='/'"></div>
+      <div class="t">DS-COUNT 2.0.0 - Yishay Raziel</div>
+      <div class="box min" aria-hidden="true"></div>
+      <div class="box max" aria-hidden="true"></div>
+    </div>
+
+    <nav class="menu" aria-label="Menu">
+      <div>
+        <button class="m" aria-haspopup="true" aria-expanded="false"><u>F</u>ile</button>
+        <div class="drop" role="menu">
+          <a role="menuitem" href="#download">Download... <span class="k">Ctrl+D</span></a>
+          <a role="menuitem" href="https://github.com/yishayraziel/ds-count-windows-build/releases/latest/download/DS-COUNT-2.0.0-macOS.dmg">Download for Mac</a>
+          <a role="menuitem" href="https://github.com/yishayraziel/ds-count-windows-build/releases/latest/download/DS-COUNT-2.0.0-Windows-x64-Setup.exe">Download for Windows</a>
+          <hr>
+          <a role="menuitem" href="/plugins">All Plugins...</a>
+          <a role="menuitem" href="/">Exit to yraziel.com</a>
+        </div>
+      </div>
+      <div>
+        <button class="m" aria-haspopup="true" aria-expanded="false"><u>O</u>ptions</button>
+        <div class="drop" role="menu">
+          <button role="menuitemradio" data-skin="w311" aria-checked="true">Skin: 3.11</button>
+          <button role="menuitemradio" data-skin="cl" aria-checked="false">Skin: Classic</button>
+          <hr>
+          <button role="menuitemradio" data-crt="off" aria-checked="true">Screen Effect: Off</button>
+          <button role="menuitemradio" data-crt="soft" aria-checked="false">Screen Effect: Soft</button>
+          <button role="menuitemradio" data-crt="strong" aria-checked="false">Screen Effect: Strong</button>
+        </div>
+      </div>
+      <div>
+        <button class="m" aria-haspopup="true" aria-expanded="false"><u>W</u>indow</button>
+        <div class="drop" role="menu">
+          <a role="menuitem" href="#features">1 What It Does</a>
+          <a role="menuitem" href="#skins">2 Two Skins</a>
+          <a role="menuitem" href="#presets">3 Factory Presets</a>
+          <a role="menuitem" href="#specs">4 System Requirements</a>
+          <a role="menuitem" href="#download">5 Setup</a>
+        </div>
+      </div>
+      <div>
+        <button class="m" aria-haspopup="true" aria-expanded="false"><u>H</u>elp</button>
+        <div class="drop" role="menu">
+          <a role="menuitem" href="/contact">Contact Yishay...</a>
+          <hr>
+          <button role="menuitem" data-about>About DS-COUNT...</button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="tools">
+      <a class="btn icon" href="#download"><svg aria-hidden="true"><use href="#i-disk"/></svg>Download</a>
+      <span class="sp"></span>
+      <span class="lbl opt">Skin:</span>
+      <button class="btn opt" data-skin="w311" aria-pressed="true">3.11</button>
+      <button class="btn opt" data-skin="cl" aria-pressed="false">Classic</button>
+    </div>
+
+    <main class="client">
+      <section class="hero" aria-labelledby="h1">
+        <div>
+          <span class="lcd">MASTERING DYNAMICS</span>
+          <h1 class="word" id="h1">DS-COUNT</h1>
+          <p class="by">by Yishay Raziel <span class="ver">version 2.0.0</span></p>
+          <p class="lede">Two-channel mastering dynamics. Band de-essing, dual release, look-ahead and a true-peak limiter, in a window you already know how to use.</p>
+          <div class="cta">
+            <a class="btn def" href="#download">Download...</a>
+            <a class="btn" href="#features">What it does</a>
+          </div>
+          <p class="note">VST3, AU and Standalone. Mac (signed and notarized) and Windows.</p>
+        </div>
+
+        <div class="win child">
+          <div class="tb"><div class="box ctl" aria-hidden="true"></div><div class="t" id="shotTitle">DS-COUNT - Transparent Master</div><div class="box max" aria-hidden="true"></div></div>
+          <div class="shot">
+            <img id="shot" src="win311_dynamics.webp" width="1620" height="968"
+                 alt="The DS-COUNT window: loudness and output, level meters, transfer curve, gain reduction history, band filter, and the dynamics controls below."
+                 data-w311="win311_dynamics.webp" data-cl="classic_dynamics.webp" fetchpriority="high">
+          </div>
+          <div class="shotbar" role="radiogroup" aria-label="Screenshot">
+            <label class="rb"><input type="radio" name="shot" value="dynamics" checked> Transparent Master</label>
+            <label class="rb"><input type="radio" name="shot" value="deess"> De-Ess Vocal</label>
+            <label class="rb"><input type="radio" name="shot" value="crt"> Screen effect</label>
+          </div>
+        </div>
+      </section>
+
+      <div class="grid">
+        <section class="win child c7" id="features" aria-labelledby="t-feat">
+          <div class="tb"><div class="box ctl" aria-hidden="true"></div><div class="t" id="t-feat">What It Does</div><div class="box max" aria-hidden="true"></div></div>
+          <div class="pane">
+            <div class="feat">
+              <div class="grp"><h3>Gain Computer</h3><p>Threshold, ratio from 1:5 upward expansion to 1000:1 limiting, soft knee, make-up or automatic make-up.</p></div>
+              <div class="grp"><h3>Dual Release</h3><p>Fast release for the transients, slow release for the body, an average that decides between them, and a release delay.</p></div>
+              <div class="grp"><h3>Look-Ahead</h3><p>Up to 63 ms. The gain is already moving when the peak arrives. Peak or RMS detection.</p></div>
+              <div class="grp"><h3>Band</h3><p>Full, Low Pass, Band Pass or High Pass, linear phase. Only the band is turned down: de-essing, bass control, cymbal taming.</p></div>
+              <div class="grp"><h3>Two Channels</h3><p>Left/Right or Mid/Side, ganged or independent, linked sidechain, external sidechain, parallel mode.</p></div>
+              <div class="grp"><h3>Output</h3><p>Limiter (Safe, Type 1, Type 2 true peak), true-peak meters, BS.1770 loudness, dither 16/20/24 bit with three noise shapes.</p></div>
+            </div>
+            <div class="grp"><h3>Also</h3><p>A/B compare, undo and redo, 37 factory presets, user presets, bit-exact bypass that keeps the latency, Low Latency mode (6.3 ms).</p></div>
+          </div>
+        </section>
+
+        <section class="win child c5" id="presets" aria-labelledby="t-pre">
+          <div class="tb"><div class="box ctl" aria-hidden="true"></div><div class="t" id="t-pre">Factory Presets (37)</div><div class="box max" aria-hidden="true"></div></div>
+          <div class="pane">
+            <ul class="list" tabindex="0" aria-label="Factory presets">
+              <li class="h">Mastering</li>
+              <li>Transparent Master</li><li>Gentle Glue</li><li>Loud Master</li><li>Streaming Ready (-1 dBTP)</li><li>Mid/Side Mastering</li>
+              <li>Bass Control</li><li>Bass Boost</li><li>Neutral M/S Unlinked</li><li>Neutral Stereo Linked Ganged</li>
+              <li class="h">Compression</li>
+              <li>Compressor Gentle</li><li>Compressor Anti-Distortion Trumpet</li><li>Dual Compressor Vox</li><li>Parallel Drum Compression</li>
+              <li>Parallel Comp Transparent</li><li>Parallel Comp Tonalisation</li><li>Parallel Comp Tonal Presence</li><li>Parallel Comp Tonal Warmth</li>
+              <li class="h">Expansion</li>
+              <li>Upward Dynamics Restoration</li><li>Dual Expander Vox</li><li>Upward Expansion Bass Drum</li><li>Upward Expansion High Pass</li>
+              <li>Upward Expansion Warming</li><li>Upward Expansion Wide Band</li>
+              <li class="h">De-Essing</li>
+              <li>De-Ess Vocal (Band Pass 6.5 kHz)</li><li>De-Ess Bright Vocal (High Pass 7 kHz)</li><li>De-Ess Low Sibilance (Band Pass 5 kHz)</li>
+              <li>De-Ess Mix Bus (Mid only, 7.5 kHz)</li><li>De-Ess Vocal Hard</li><li>De-Ess Vocal Soft</li><li>De-Ess Vocal Hard M/S</li><li>De-Ess Vocal Soft M/S</li>
+              <li>De-Ess Hi Hat Hard</li><li>De-Ess Hi Hat Soft</li><li>Cymbal Tamer (High Pass 9 kHz)</li>
+              <li class="h">Limiting</li>
+              <li>Limiter Soft</li><li>Limiter Mid</li><li>Limiter Hard</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="win child c7" id="skins" aria-labelledby="t-skin">
+          <div class="tb"><div class="box ctl" aria-hidden="true"></div><div class="t" id="t-skin">Two Skins</div><div class="box max" aria-hidden="true"></div></div>
+          <div class="pane">
+            <p>Pick the desktop you grew up on. "3.11" is sixteen colours and bevelled buttons; "Classic" is one bit, black on white. Both have an optional old-screen filter: scan lines and phosphor glow, no curved glass. The choice is remembered for every instance. Try it on this page: Options &gt; Skin.</p>
+            <div class="shot"><img id="skinShot" src="classic_deess.webp" width="1620" height="968" loading="lazy"
+              alt="DS-COUNT in the Classic skin: black and white, with the same controls."
+              data-w311="classic_deess.webp" data-cl="win311_deess.webp"></div>
+          </div>
+        </section>
+
+        <section class="win child c5" id="specs" aria-labelledby="t-spec">
+          <div class="tb"><div class="box ctl" aria-hidden="true"></div><div class="t" id="t-spec">System Requirements</div><div class="box max" aria-hidden="true"></div></div>
+          <div class="pane">
+            <table class="kv">
+              <tr><th>Mac</th><td>macOS 12 or later, Apple Silicon or Intel. VST3, AU, Standalone. Signed and notarized.</td></tr>
+              <tr><th>Windows</th><td>Windows 10 or 11, 64-bit. VST3, Standalone.</td></tr>
+              <tr><th>Rates</th><td>44.1 to 192 kHz, mono or stereo</td></tr>
+              <tr><th>Engine</th><td>64-bit floating point inside</td></tr>
+              <tr><th>Latency</th><td>118 ms; 6.3 ms in Low Latency mode</td></tr>
+              <tr><th>Sidechain</th><td>Optional external stereo input</td></tr>
+            </table>
+          </div>
+        </section>
+
+        <section class="win child c12" id="download" aria-labelledby="t-dl">
+          <div class="tb"><div class="box ctl" aria-hidden="true"></div><div class="t" id="t-dl">DS-COUNT Setup</div></div>
+          <div class="pane dl">
+            <div class="ico"><svg aria-hidden="true"><use href="#i-disk"/></svg></div>
+            <div>
+              <p><b>DS-COUNT 2.0.0</b> is ready to install. Choose your computer:</p>
+              <div class="dlrow">
+                <a class="btn icon def" href="https://github.com/yishayraziel/ds-count-windows-build/releases/latest/download/DS-COUNT-2.0.0-macOS.dmg">
+                  <svg aria-hidden="true"><use href="#i-mac"/></svg>Mac<small>.dmg, 15.4 MB</small></a>
+                <a class="btn icon" href="https://github.com/yishayraziel/ds-count-windows-build/releases/latest/download/DS-COUNT-2.0.0-Windows-x64-Setup.exe">
+                  <svg aria-hidden="true"><use href="#i-pc"/></svg>Windows<small>.exe, 5.7 MB</small></a>
+              </div>
+              <div class="feat">
+                <div class="grp"><h3>Mac</h3>
+                  <ol class="steps"><li>Open the .dmg.</li><li>Run DS-COUNT-2.0.0-macOS.pkg.</li><li>Rescan plug-ins in your DAW.</li></ol>
+                  <p style="margin-top:6px">Plug-ins go to /Library/Audio/Plug-Ins, the app to Applications.</p></div>
+                <div class="grp"><h3>Windows</h3>
+                  <ol class="steps"><li>Run the Setup .exe.</li><li>If Windows says "Windows protected your PC", click More info, then Run anyway.</li><li>Rescan plug-ins in your DAW.</li></ol>
+                  <p style="margin-top:6px">The VST3 goes to Common Files\VST3.</p></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <div class="status" role="status">
+      <span class="grow">Ready</span>
+      <span>48.0 kHz</span>
+      <span>Latency 118.0 ms</span>
+      <span>(C) <span id="yr">2026</span> Yishay Raziel</span>
+    </div>
+  </div>
+
+  <nav class="icons" aria-label="yraziel.com">
+    <a class="dicon" href="/plugins"><svg aria-hidden="true"><use href="#i-group"/></svg><span>Plugins</span></a>
+    <a class="dicon" href="/"><svg aria-hidden="true"><use href="#i-meter"/></svg><span>Works</span></a>
+    <a class="dicon" href="/about"><svg aria-hidden="true"><use href="#i-info"/></svg><span>About</span></a>
+    <a class="dicon" href="/contact"><svg aria-hidden="true"><use href="#i-group"/></svg><span>Contact</span></a>
+  </nav>
+</div>
+
+<dialog id="about" aria-labelledby="t-about">
+  <div class="win">
+    <div class="tb"><div class="box ctl" aria-hidden="true"></div><div class="t" id="t-about">About DS-COUNT</div></div>
+    <div class="pane">
+      <svg width="48" height="48" aria-hidden="true"><use href="#i-meter"/></svg>
+      <div>
+        <p><b>DS-COUNT</b><br>Version 2.0.0</p>
+        <p>Mastering dynamics by Yishay Raziel.<br>Original DSP, interface and artwork.</p>
+        <p style="font-size:15px">Fonts: DSC System (from Arimo, SIL Open Font License) and ChicagoFLF (public domain).</p>
+      </div>
+      <div class="row"><button class="btn def" data-close>OK</button></div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+(function(){
+  var d=document, b=d.body;
+  var store={get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+  // ---- menus ----
+  var buttons=[].slice.call(d.querySelectorAll('.menu button.m'));
+  function closeAll(except){buttons.forEach(function(x){if(x!==except){x.setAttribute('aria-expanded','false');x.nextElementSibling.classList.remove('open')}})}
+  buttons.forEach(function(btn){
+    btn.addEventListener('click',function(e){e.stopPropagation();var open=btn.getAttribute('aria-expanded')==='true';closeAll(btn);
+      btn.setAttribute('aria-expanded',open?'false':'true');btn.nextElementSibling.classList.toggle('open',!open);
+      if(!open){var f=btn.nextElementSibling.querySelector('a,button');if(f)f.focus()}});
+  });
+  d.addEventListener('click',function(){closeAll()});
+  d.addEventListener('keydown',function(e){
+    if(e.key==='Escape')closeAll();
+    if(e.altKey&&!e.ctrlKey&&!e.metaKey){var k=e.key.toLowerCase();buttons.forEach(function(x){if(x.textContent.trim()[0].toLowerCase()===k){e.preventDefault();x.click()}})}
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='d'){e.preventDefault();location.hash='download'}
+  });
+  d.querySelectorAll('.drop a').forEach(function(a){a.addEventListener('click',function(){closeAll()})});
+
+  // ---- screenshot ----
+  var shot=d.getElementById('shot'), title=d.getElementById('shotTitle');
+  var shots={dynamics:['dynamics','Transparent Master'],deess:['deess','De-Ess Vocal (Band Pass 6.5 kHz)'],crt:['dynamics_crt','Transparent Master']};
+  function current(){var r=d.querySelector('input[name=shot]:checked');return r?r.value:'dynamics'}
+  function updateShot(){var s=shots[current()], cl=b.classList.contains('cl');
+    var name=(cl&&s[0]!=='dynamics_crt'?'classic_':'win311_')+s[0]+'.webp';
+    shot.src=name; title.textContent='DS-COUNT - '+s[1];
+    var other=d.getElementById('skinShot'); other.src=cl?'win311_deess.webp':'classic_deess.webp';
+    other.alt=cl?'DS-COUNT in the 3.11 skin: sixteen colours, bevelled buttons.':'DS-COUNT in the Classic skin: black and white, with the same controls.'}
+  d.querySelectorAll('input[name=shot]').forEach(function(r){r.addEventListener('change',updateShot)});
+
+  // ---- skin and screen effect ----
+  function setSkin(s){b.classList.toggle('cl',s==='cl');
+    d.querySelectorAll('[data-skin]').forEach(function(x){var on=x.getAttribute('data-skin')===s;
+      x.setAttribute(x.getAttribute('role')?'aria-checked':'aria-pressed',on?'true':'false')});
+    d.querySelector('meta[name=theme-color]').setAttribute('content',s==='cl'?'#ffffff':'#008080');
+    updateShot(); store.set('dsc-skin',s)}
+  function setCrt(c){b.setAttribute('data-crt',c);
+    d.querySelectorAll('[data-crt]').forEach(function(x){if(x!==b)x.setAttribute('aria-checked',x.getAttribute('data-crt')===c?'true':'false')});
+    store.set('dsc-crt',c)}
+  d.querySelectorAll('[data-skin]').forEach(function(x){x.addEventListener('click',function(){setSkin(x.getAttribute('data-skin'));closeAll()})});
+  d.querySelectorAll('button[data-crt]').forEach(function(x){x.addEventListener('click',function(){setCrt(x.getAttribute('data-crt'));closeAll()})});
+  setSkin(store.get('dsc-skin')==='cl'?'cl':'w311');
+  var c=store.get('dsc-crt'); setCrt(c==='soft'||c==='strong'?c:'off');
+
+  // ---- about ----
+  var dlg=d.getElementById('about');
+  d.querySelector('[data-about]').addEventListener('click',function(){closeAll();if(dlg.showModal)dlg.showModal();else dlg.setAttribute('open','')});
+  dlg.querySelector('[data-close]').addEventListener('click',function(){dlg.close?dlg.close():dlg.removeAttribute('open')});
+
+  d.getElementById('yr').textContent=new Date().getFullYear();
+})();
+</script>
+</body>
+</html>

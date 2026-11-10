@@ -18,6 +18,16 @@
     "image": "/anal-log/anal-log_front.webp"
   },
   {
+    "name": "DS-COUNT",
+    "type": "Mastering Dynamics",
+    "tagline": "Two-channel mastering dynamics with band de-essing, dual release and a true-peak limiter.",
+    "formats": "VST3 / AU / Standalone · Mac + Windows",
+    "status": "free",
+    "url": "/ds-count",
+    "image": "/ds-count/win311_dynamics.webp",
+    "version": "2.0.0"
+  },
+  {
     "name": "Same Boy",
     "type": "Chiptune Synth",
     "tagline": "Classic 8-bit handheld sounds in a synth.",
@@ -38,13 +48,6 @@
     "type": "Voiceover Processor",
     "tagline": "One knob from raw recording to on-air voice, with built-in AI cleaning.",
     "formats": "VST3",
-    "status": "soon"
-  },
-  {
-    "name": "DS-COUNT",
-    "type": "Mastering Dynamics",
-    "tagline": "Mastering-grade dynamics with a hardware soul.",
-    "formats": "VST3 / AU / Standalone · Mac",
     "status": "soon"
   },
   {
