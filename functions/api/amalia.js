@@ -20,7 +20,7 @@ export async function onRequestPost({request,env}) {
  const db=env.AMALIA_DB;
  await db.prepare("CREATE TABLE IF NOT EXISTS amalia_requests (day TEXT NOT NULL, visitor TEXT NOT NULL)").run();
  await db.prepare("CREATE INDEX IF NOT EXISTS amalia_day_visitor ON amalia_requests(day,visitor)").run();
- const reservation=await db.prepare("INSERT INTO amalia_requests(day,visitor) SELECT ?1,?2 WHERE (SELECT COUNT(*) FROM amalia_requests WHERE day=?1 AND visitor=?2)<10 AND (SELECT COUNT(*) FROM amalia_requests WHERE day=?1)<100 AND (SELECT COUNT(*) FROM amalia_requests WHERE day>=?3 AND day<?4)<1000").bind(day,visitor,month+"-01",month+"-32").run();
+ const reservation=await db.prepare("INSERT INTO amalia_requests(day,visitor) SELECT ?1,?2 WHERE (SELECT COUNT(*) FROM amalia_requests WHERE day=?1 AND visitor=?2)<50 AND (SELECT COUNT(*) FROM amalia_requests WHERE day=?1)<100 AND (SELECT COUNT(*) FROM amalia_requests WHERE day>=?3 AND day<?4)<1000").bind(day,visitor,month+"-01",month+"-32").run();
  if(reservation.meta?.changes!==1)return reply({error:"מכסת השימוש מוצתה. נסו שוב בהמשך."},429);
  const tone=new Map([["auto","אוטומטי"],["sarcastic","סרקסטי"],["angry","נוקב"],["legal","משפטי"],["funny","קומי"],["biblical","מקראי"]]).get(d.tone)||"אוטומטי";
  const length=new Map([["short","עד 280 תווים"],["medium","עד 100 מילים"],["long","עד 220 מילים"]]).get(d.length)||"עד 100 מילים";
