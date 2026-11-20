@@ -1,6 +1,6 @@
 export async function onRequestPost({request,env}) {
  const reply=(body,status=200)=>Response.json(body,{status,headers:{"Cache-Control":"no-store"}});
- if(!env.GEMINI_API_KEY) return reply({error:"מפתח ה-API טרם הוגדר."},503);
+ if(!env.GEMINI_API_KEY) return reply({error:"מפתח Gemini טרם זמין בפריסה."},503);
  if(env.AMALIA_ENABLED!=="true") return reply({error:"משתנה ההפעלה טרם זמין בפריסה."},503);
  if(request.headers.get("Origin")!==new URL(request.url).origin) return reply({error:"בקשה לא מורשית."},403);
  if(!env.AMALIA_DB) return reply({error:"מסד מגבלת השימוש טרם זמין בפריסה."},503);
@@ -11,7 +11,7 @@ export async function onRequestPost({request,env}) {
  const topic=typeof d?.topic==="string"?d.topic.trim():"";
  if(!topic||topic.length>1500)return reply({error:"יש להזין נושא באורך עד 1500 תווים."},400);
  stage="database";
- // Reserve quota atomically before calling the paid upstream API.
+ // Reserve quota atomically before calling Gemini.
  const day=new Date().toISOString().slice(0,10), month=day.slice(0,7);
  const enc=new TextEncoder();
  const key=await crypto.subtle.importKey("raw",enc.encode(env.GEMINI_API_KEY),{name:"HMAC",hash:"SHA-256"},false,["sign"]);
