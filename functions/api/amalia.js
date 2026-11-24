@@ -27,13 +27,13 @@ export async function onRequestPost({request,env}) {
  const level=Math.max(1,Math.min(10,Math.round(Number(d.level)||8)));
  const prompt="כתוב פוסט סאטירי מקורי בעברית, בלשון נקבה כשנדרש. ערבב עברית גבוהה עם סלנג, אירוניה, שאלות רטוריות, מונחים משפטיים, ביטויים מקראיים וסיום קצר ועוקצני. אל תציג את הטקסט כאילו נכתב בידי אדם אמיתי. אל תמציא עובדות או האשמות; התמקד בביקורת על רעיונות והתנהגות. החזר רק את הפוסט. סגנון: "+tone+"; חדות: "+level+"/10; אורך: "+length;
  stage="gemini";
- const models=["gemini-3.8-flash","gemini-3.6-flash","gemini-3.1-flash-lite"];
+ const models=["gemini-3.5-flash-lite","gemini-3.8-flash"];
  let response;
  const body=JSON.stringify({systemInstruction:{parts:[{text:prompt}]},contents:[{role:"user",parts:[{text:topic}]}],generationConfig:{maxOutputTokens:2048}});
  for(let i=0;i<models.length;i++){
-   if(i)await new Promise(resolve=>setTimeout(resolve,650*i));
+   if(i)await new Promise(resolve=>setTimeout(resolve,400));
    try{
-     response=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+models[i]+":generateContent",{method:"POST",headers:{"x-goog-api-key":env.GEMINI_API_KEY,"Content-Type":"application/json"},body,signal:AbortSignal.timeout(12000)});
+     response=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+models[i]+":generateContent",{method:"POST",headers:{"x-goog-api-key":env.GEMINI_API_KEY,"Content-Type":"application/json"},body,signal:AbortSignal.timeout(8000)});
    }catch(e){if(i===models.length-1)throw e;continue;}
    if(response.ok||![404,429,500,502,503,504].includes(response.status)||i===models.length-1)break;
    await response.body?.cancel().catch(()=>{});
