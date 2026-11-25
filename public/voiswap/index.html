@@ -105,7 +105,7 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
       <a class="btn" id="btn-mac" data-os="mac" href="https://www.dropbox.com/scl/fi/5ik5wpmhbr1k9pbz8an89/VOISWAP-mac.dmg?rlkey=397rh1em2x1icmxp47fvmjp7d&amp;dl=1">Download for Mac<small>Apple Silicon (M1 and later) · signed &amp; notarized · <span data-size="mac">DMG</span></small></a>
       <a class="btn" id="btn-win" data-os="win" href="https://www.dropbox.com/scl/fi/ua6nvvohgf1xkaltwh0se/VOISWAP-windows-setup.exe?rlkey=8dcaitpqu6cp268qrve1h5qwa&amp;dl=1">Download for Windows<small>Windows 10 / 11 · 64-bit installer · <span data-size="win">EXE</span></small></a>
     </div>
-    <div class="meta"><span>Version <span id="ver">1.1.4</span></span><span>Free</span><span>By Yishay Raziel</span></div>
+    <div class="meta"><span>Version <span id="ver">1.1.5</span></span><span>Free</span><span>By Yishay Raziel</span></div>
     <div class="phone">VOISWAP runs on a Mac or a Windows PC.<br><button type="button" id="share">Send this link to my computer</button></div>
   </div>
 
@@ -171,16 +171,22 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
   // Download locations: fixed file names in Dropbox (VOISWAP-mac.dmg / VOISWAP-windows-setup.exe).
   // A new release replaces those files; only version and sizes change here.
   var REL = {
-    version: "1.1.4",
-    mac: { url: "https://www.dropbox.com/scl/fi/5ik5wpmhbr1k9pbz8an89/VOISWAP-mac.dmg?rlkey=397rh1em2x1icmxp47fvmjp7d&dl=1", size: 146794026 },
-    win: { url: "https://www.dropbox.com/scl/fi/ua6nvvohgf1xkaltwh0se/VOISWAP-windows-setup.exe?rlkey=8dcaitpqu6cp268qrve1h5qwa&dl=1", size: 123058489 }
+    version: "1.1.5",
+    mac: { url: "https://www.dropbox.com/scl/fi/5ik5wpmhbr1k9pbz8an89/VOISWAP-mac.dmg?rlkey=397rh1em2x1icmxp47fvmjp7d&dl=1", size: 146863445 },
+    win: { url: "https://www.dropbox.com/scl/fi/ua6nvvohgf1xkaltwh0se/VOISWAP-windows-setup.exe?rlkey=8dcaitpqu6cp268qrve1h5qwa&dl=1", size: 123119946 }
   };
-  document.getElementById("ver").textContent = REL.version;
-  ["mac", "win"].forEach(function (k) {
-    var a = document.getElementById("btn-" + k), s = document.querySelector('[data-size="' + k + '"]');
-    if (REL[k].url) { a.href = REL[k].url; } else { a.classList.add("soon"); }
-    if (s) s.textContent = Math.round(REL[k].size / 1048576) + " MB";
-  });
+  function apply(R) {
+    document.getElementById("ver").textContent = R.version;
+    ["mac", "win"].forEach(function (k) {
+      if (!R[k]) return;
+      var a = document.getElementById("btn-" + k), s = document.querySelector('[data-size="' + k + '"]');
+      if (R[k].url) { a.href = R[k].url; a.classList.remove("soon"); } else { a.classList.add("soon"); }
+      if (s && R[k].size) s.textContent = Math.round(R[k].size / 1048576) + " MB";
+    });
+  }
+  apply(REL);
+  // latest.json is the single source of truth (the app checks the same file for updates)
+  fetch("latest.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { if (j && j.version) apply(j); }).catch(function () {});
 
   var ua = navigator.userAgent || "";
   var isPhone = /iPhone|iPad|iPod|Android/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);

@@ -1,0 +1,12 @@
+{
+  "version": "1.1.5",
+  "date": "2026-11-25",
+  "notes": [
+    "VOISWAP now tells you when a new version is out",
+    "Play buttons switch to pause while a file plays",
+    "Recording window has its own player",
+    "Fewer pop-up messages"
+  ],
+  "mac": { "url": "https://www.dropbox.com/scl/fi/5ik5wpmhbr1k9pbz8an89/VOISWAP-mac.dmg?rlkey=397rh1em2x1icmxp47fvmjp7d&dl=1", "size": 146863445 },
+  "win": { "url": "https://www.dropbox.com/scl/fi/ua6nvvohgf1xkaltwh0se/VOISWAP-windows-setup.exe?rlkey=8dcaitpqu6cp268qrve1h5qwa&dl=1", "size": 123119946 }
+}
