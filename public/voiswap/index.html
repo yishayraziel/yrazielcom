@@ -102,10 +102,10 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
     <p>Drop clean acapellas or record one, pick an RVC voice model, and convert the whole batch in one go. Runs on your own computer, offline after setup.</p>
 
     <div class="dl">
-      <a class="btn" id="btn-mac" data-os="mac" href="https://www.dropbox.com/scl/fi/t9mk689tezyovyv649rbe/VOISWAP-1.1.1-mac-arm64.dmg?rlkey=72epzdqc6yuesqcldh2fsiyg4&amp;dl=1">Download for Mac<small>Apple Silicon (M1 and later) · signed &amp; notarized · <span data-size="mac">DMG</span></small></a>
-      <a class="btn" id="btn-win" data-os="win" href="https://www.dropbox.com/scl/fi/jo312p3559gkhmplthqvx/VOISWAP-1.1.1-win-setup.exe?rlkey=infuc84jy7p21erl5e9v8qm8c&amp;dl=1">Download for Windows<small>Windows 10 / 11 · 64-bit installer · <span data-size="win">EXE</span></small></a>
+      <a class="btn" id="btn-mac" data-os="mac" href="https://www.dropbox.com/scl/fi/5ik5wpmhbr1k9pbz8an89/VOISWAP-mac.dmg?rlkey=397rh1em2x1icmxp47fvmjp7d&amp;dl=1">Download for Mac<small>Apple Silicon (M1 and later) · signed &amp; notarized · <span data-size="mac">DMG</span></small></a>
+      <a class="btn" id="btn-win" data-os="win" href="https://www.dropbox.com/scl/fi/ua6nvvohgf1xkaltwh0se/VOISWAP-windows-setup.exe?rlkey=8dcaitpqu6cp268qrve1h5qwa&amp;dl=1">Download for Windows<small>Windows 10 / 11 · 64-bit installer · <span data-size="win">EXE</span></small></a>
     </div>
-    <div class="meta"><span>Version <span id="ver">1.1.1</span></span><span>Free</span><span>By Yishay Raziel</span></div>
+    <div class="meta"><span>Version <span id="ver">1.1.4</span></span><span>Free</span><span>By Yishay Raziel</span></div>
     <div class="phone">VOISWAP runs on a Mac or a Windows PC.<br><button type="button" id="share">Send this link to my computer</button></div>
   </div>
 
@@ -168,11 +168,12 @@ footer a{text-decoration:none}footer a:hover{color:#fff}
 </div>
 <script>
 (function () {
-  // Download locations: one place to update per release
+  // Download locations: fixed file names in Dropbox (VOISWAP-mac.dmg / VOISWAP-windows-setup.exe).
+  // A new release replaces those files; only version and sizes change here.
   var REL = {
-    version: "1.1.1",
-    mac: { url: "https://www.dropbox.com/scl/fi/t9mk689tezyovyv649rbe/VOISWAP-1.1.1-mac-arm64.dmg?rlkey=72epzdqc6yuesqcldh2fsiyg4&dl=1", size: 146796947 },
-    win: { url: "https://www.dropbox.com/scl/fi/jo312p3559gkhmplthqvx/VOISWAP-1.1.1-win-setup.exe?rlkey=infuc84jy7p21erl5e9v8qm8c&dl=1", size: 123132525 }
+    version: "1.1.4",
+    mac: { url: "https://www.dropbox.com/scl/fi/5ik5wpmhbr1k9pbz8an89/VOISWAP-mac.dmg?rlkey=397rh1em2x1icmxp47fvmjp7d&dl=1", size: 146794026 },
+    win: { url: "https://www.dropbox.com/scl/fi/ua6nvvohgf1xkaltwh0se/VOISWAP-windows-setup.exe?rlkey=8dcaitpqu6cp268qrve1h5qwa&dl=1", size: 123058489 }
   };
   document.getElementById("ver").textContent = REL.version;
   ["mac", "win"].forEach(function (k) {
